@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/Fuku6uNL.iml" filepath="$PROJECT_DIR$/.idea/modules/Fuku6uNL.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/Fuku6uNL_main.iml" filepath="$PROJECT_DIR$/.idea/modules/Fuku6uNL_main.iml" group="Fuku6uNL" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/Fuku6uNL_test.iml" filepath="$PROJECT_DIR$/.idea/modules/Fuku6uNL_test.iml" group="Fuku6uNL" />
+    </modules>
+  </component>
+</project>
