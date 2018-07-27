@@ -18,10 +18,10 @@ class NLText {
     // タグファイル
     private static Map<String, String[]> tagMap = new HashMap<>();
     // タグ変換されたString
-    private List<String> tagStringList = new ArrayList();
-
+    private List<String> tagStringList = new ArrayList<>();
+    // 生文から抽出されたtargetが入るリスト
     private List<String> targetList = new ArrayList<>();
-
+    // 生文から抽出されたtag.csv上の1行が入るリスト key = 自然言語単語, value = [タグ名, (Role), (Species)]
     private ArrayDeque<Map.Entry<String, String[]>> tagEntryList = new ArrayDeque<>();
 
     static {
@@ -35,15 +35,13 @@ class NLText {
                 filterList.add(readLine.trim());    // 制御文字と空白を削除してからリストへ追加
             }
             bufferedReader.close();
-        } catch (FileNotFoundException e) {
-            Log.fatal("フィルタ情報読み込みでエラー" + e);
         } catch (IOException e) {
             Log.fatal("フィルタ情報読み込みでエラー" + e);
         }
         // タグファイルの読み込み
         try(BufferedReader bufferedReader = Files.newBufferedReader(Paths.get(dir + "/lib/tag.csv"))) {
             List<String> tagList = new ArrayList<>();
-            String readLine = "";
+            String readLine;
             while((readLine = bufferedReader.readLine()) != null) {
                 tagList.add(readLine.trim());    // 制御文字と空白を削除してからリストへ追加
             }
@@ -59,22 +57,22 @@ class NLText {
     }
 
     // getter
-    public List<String> getTagStringList() {
+    List<String> getTagStringList() {
         return tagStringList;
     }
-    public List<String> getTargetList() {
+    List<String> getTargetList() {
         return targetList;
     }
 
-    public NLText(String text) {
+    NLText(String text) {
         // 1文に分解する
         String[] oneSentences = text.split("[!.。！]");
         // 1文ずつ処理をする
-        for (int i = 0; i < oneSentences.length; i++) {
-            String sentence = oneSentences[i];
+        for (String oneSentence : oneSentences) {
+            String sentence = oneSentence;
             // フィルタにかける「わーい」とか「頑張るぞー」とかは解析不要のため，コンティニュー
-            if (sentence.equals("") || sentence.equals("Over")
-                    || sentence.equals("Skip") || !filterList.contains(sentence)) {
+
+            if (sentence.equals("") || isChat(sentence)) {
                 // 解析する必要のない発話を除外（中身のない発言，Over・Skip発言，雑談
                 Log.trace("NL解析不要: " + sentence);
                 continue;
@@ -83,7 +81,7 @@ class NLText {
             // 句点までの内容にフィルターが引っかからない場合は句点までの文を削除する．
             String[] textArray = sentence.split("、");
             for (int j = 0; j < textArray.length; j++) {
-                if (!filterList.contains(textArray[j])) {
+                if (isChat(textArray[j])) {
                     textArray[j] = "";
                 }
             }
@@ -92,7 +90,7 @@ class NLText {
 
             // 文をタグ変換（<TARGET>を除く）
             String convertToTag = sentence;
-            for (Map.Entry<String, String[]> tagEntry:
+            for (Map.Entry<String, String[]> tagEntry :
                     tagMap.entrySet()) {
                 int index;
                 String tmpText = sentence;  // 削除されながら走査される文字列
@@ -110,12 +108,12 @@ class NLText {
             // タグ変換<TARGET>をする
             // -- "Agent["を走査してその後の"]"までを保存する 「Agent[01]は人狼」から「Agent[01]」を取り出す
             String tmpText = convertToTag;   // 削除されながら走査される文字列
-            while(true) {
+            while (true) {
                 int index = tmpText.indexOf("Agent[");
                 if (index != -1) {
                     int endIndex = tmpText.indexOf("]");
-                    addTargetList((String)tmpText.subSequence(index, endIndex+1));
-                    tmpText = tmpText.substring(endIndex+1);
+                    addTargetList((String) tmpText.subSequence(index, endIndex + 1));
+                    tmpText = tmpText.substring(endIndex + 1);
                 } else {
                     break;
                 }
@@ -126,7 +124,17 @@ class NLText {
         }
 
     }
-    public List<String> getTagStringList (String tag, int cast) {
+
+    /**
+     * 生文からtagに変換された文字列を返す
+     *
+     * @param tag 取得したいタグ（ex: <!-- <ROLE> -->）
+     * @param cast いくつめのtagが欲しいか
+     *             例えば「私は占い師で，Agent[01]は人狼でした」の文の場合は，
+     *             「私はROLEで，Agent[01]はROLEでした」に変換される．
+     * @return
+     */
+    List<String> getTagStringList(String tag, int cast) {
         List<String> reTagStringList = new ArrayList<>();
         tagEntryList.forEach((Entry -> {
             if (Entry.getValue()[0].equals(tag)) {// Topic
@@ -151,5 +159,13 @@ class NLText {
             }
         }
         this.tagEntryList.addLast(tagEntry);
+    }
+    private static boolean isChat(String text) {
+        for (String filter : filterList) {
+            if (text.indexOf(filter) != -1) {
+                return false;
+            }
+        }
+        return true;
     }
 }

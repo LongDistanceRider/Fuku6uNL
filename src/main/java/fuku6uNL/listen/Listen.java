@@ -8,6 +8,13 @@ import org.aiwolf.common.data.Talk;
 import java.util.List;
 import java.util.Objects;
 
+/**
+ * トークリストを読み取り処理を行うクラス
+ *
+ * 発言された内容に対して自然言語処理を施す
+ * プロトコル言語で処理できる話題とNL言語（追加話題）で処理する話題に分け，
+ * 各話題ごとに処理を行う
+ */
 public class Listen {
 
     // トークリストをどこまで読み込んだか
@@ -27,9 +34,13 @@ public class Listen {
             if (talk.getAgent().equals(boardSurface.getGameInfo().getAgent())) {
                 continue;
             }
+            // Over Skip発言は処理をしない
+            if (talk.getText().equals("Over") || talk.getText().equals("Skip")) {
+                continue;
+            }
 
             // 自然言語処理を行う
-            NLP nlp = new NLP(boardSurface, talk);
+            NLP nlp = new NLP(talk);
 
             // プロトコル文処理
             List<String> protocolTextList = nlp.getProtocolTextList();

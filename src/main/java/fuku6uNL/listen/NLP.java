@@ -2,8 +2,6 @@ package fuku6uNL.listen;
 
 import fuku6uNL.board.BoardSurface;
 import fuku6uNL.log.Log;
-import fuku6uNL.utterance.Utterance;
-import org.aiwolf.common.data.Agent;
 import org.aiwolf.common.data.Role;
 import org.aiwolf.common.data.Species;
 import org.aiwolf.common.data.Talk;
@@ -14,16 +12,14 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.*;
 
-public class NLP {
+class NLP {
 
     // PATH
     private static final String dir = System.getProperty("user.dir");
     // 照合する際に用いるレーベンシュタイン距離の閾値
     private static final double DISTANCE_THRESHOLD = 0.6;
-
     // 照合ファイル
     private static Map<String, String[]> comparisonMap = new HashMap<>();
-
     // プロトコル話題のリスト
     private List<String> protocolTextList = new ArrayList<>();
     // 自然言語話題のリスト
@@ -34,7 +30,7 @@ public class NLP {
         // 照合ファイルの読み込み
         try(BufferedReader bufferedReader = Files.newBufferedReader(Paths.get(dir +"/lib/comparison.csv"))) {
             List<String> comparisonList = new ArrayList<>();
-            String readLine = "";
+            String readLine;
             while((readLine = bufferedReader.readLine()) != null) {
                 comparisonList.add(readLine.trim());    // 制御文字と空白を削除してからリストへ追加
             }
@@ -51,16 +47,21 @@ public class NLP {
     }
 
     // getter
-    public List<String> getProtocolTextList() {
+    List<String> getProtocolTextList() {
         return protocolTextList;
     }
 
-    public List<ContentNL> getNlpTextList() {
+    List<ContentNL> getNlpTextList() {
         return nlpTextList;
     }
 
-    public NLP(BoardSurface boardSurface, Talk talk) {
-        // NLTextへ
+    /**
+     * Constracter
+     *
+     * @param talk talk
+     */
+    NLP(Talk talk) {
+        // NLTextインスタンス生成をし，一文に分解，不要な文の削除，タグ変換した文に分解する
         NLText nlText = new NLText(talk.getText());
         // タグ変換後の文字列を取得
         List<String> tagStringList = nlText.getTagStringList();
@@ -77,19 +78,19 @@ public class NLP {
                     maxDistance = distance;
                     maxComparisonEntry = comparisonEntry;
                 }
-                // 距離がDISTANCE_THRESHOLD以下は変換不可能とする
-                if (maxDistance > DISTANCE_THRESHOLD) {
-                    Log.trace("最大ユークリッド距離獲得照合ファイル文: " + maxComparisonEntry.getKey() + " 距離: " + maxDistance);
-                    validEntry.put(maxComparisonEntry.getKey(), maxComparisonEntry.getValue());
-                } else {
-                    Log.debug("ユークリッド距離不足．最大ユークリッド距離獲得照合ファイル文:" + maxComparisonEntry.getKey() + " 距離: " + maxDistance);
-                }
+            }
+            // 距離がDISTANCE_THRESHOLD以下は変換不可能とする
+            if (maxDistance > DISTANCE_THRESHOLD) {
+                Log.trace("最大ユークリッド距離獲得照合ファイル文: " + maxComparisonEntry.getKey() + " 距離: " + maxDistance);
+                validEntry.put(maxComparisonEntry.getKey(), maxComparisonEntry.getValue());
+            } else {
+                Log.debug("ユークリッド距離不足．tagString: " + tagString + "最大ユークリッド距離獲得照合ファイル文:" + maxComparisonEntry.getKey() + " 距離: " + maxDistance);
             }
         });
 
         // 有効なユークリッド距離を取得できたエントリーのみ処理を行う
         validEntry.forEach((key, value) -> {
-            for (int i = 0; i < value.length; i++) {
+            for (int i = 0; i < value.length; i += 3) {
                 String target = null;
                 Role role = null;
                 Species species = null;
