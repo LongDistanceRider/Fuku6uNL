@@ -35,9 +35,11 @@ public class Listen {
             List<String> protocolTextList = nlp.getProtocolTextList();
             protocolTextList.forEach(text -> protocolTopic(talk.getAgent(), text));
 
+
             // 自然言語話題処理
             List<ContentNL> nlTextList = nlp.getNlpTextList();
             nlTextList.forEach((contentNl -> nlpTopic(talk.getAgent(), contentNl)));
+
         }
         talkListHead = talkList.size();
     }

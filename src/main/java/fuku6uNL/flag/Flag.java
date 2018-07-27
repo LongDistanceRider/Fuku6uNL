@@ -11,7 +11,7 @@ import fuku6uNL.log.LogLevel;
 public class Flag {
 
     /* Logを書き出す最大レベル */
-    private static final LogLevel maxLogLevel = LogLevel.DEBUG;
+    private static final LogLevel maxLogLevel = LogLevel.TRACE;
 
     public static LogLevel getMaxLogLevel() {
         return maxLogLevel;

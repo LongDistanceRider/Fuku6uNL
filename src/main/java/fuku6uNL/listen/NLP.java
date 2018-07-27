@@ -25,9 +25,9 @@ public class NLP {
     private static Map<String, String[]> comparisonMap = new HashMap<>();
 
     // プロトコル話題のリスト
-    private List<String> protocolTextList;
+    private List<String> protocolTextList = new ArrayList<>();
     // 自然言語話題のリスト
-    private List<ContentNL> nlpTextList;
+    private List<ContentNL> nlpTextList = new ArrayList<>();
 
 
     static {

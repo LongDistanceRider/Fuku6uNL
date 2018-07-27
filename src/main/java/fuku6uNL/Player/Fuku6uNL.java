@@ -31,46 +31,51 @@ public class Fuku6uNL implements Player {
 
     @Override
     public void dayStart() {
-
+        Log.trace("dayStart()");
     }
 
     @Override
     public String talk() {
-        return null;
-    }
-
-    @Override
-    public String whisper() {
+        Log.trace("talk()");
         return null;
     }
 
     @Override
     public Agent vote() {
+        Log.trace("vote()");
         return null;
     }
 
     @Override
     public Agent attack() {
+        Log.trace("attack()");
         return null;
     }
 
     @Override
     public Agent divine() {
+        Log.trace("divine");
         return null;
     }
 
     @Override
     public Agent guard() {
+        Log.trace("guard()");
         return null;
     }
 
     @Override
     public void finish() {
-
+        Log.trace("finish()");
     }
 
     @Override
     public String getName() {
         return "Fuku6uNL";
+    }
+
+    @Override
+    public String whisper() {
+        return null;
     }
 }
