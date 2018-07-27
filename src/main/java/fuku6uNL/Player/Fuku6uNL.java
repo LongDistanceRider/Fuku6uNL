@@ -1,6 +1,7 @@
 package fuku6uNL.Player;
 
 import fuku6uNL.board.BoardSurface;
+import fuku6uNL.listen.Listen;
 import fuku6uNL.log.Log;
 import org.aiwolf.common.data.Agent;
 import org.aiwolf.common.data.Player;
@@ -11,6 +12,8 @@ public class Fuku6uNL implements Player {
 
     // BoardSurface
     private BoardSurface boardSurface;
+    // Listen
+    private Listen listen = new Listen();
 
     @Override
     public void initialize(GameInfo gameInfo, GameSetting gameSetting) {
@@ -21,7 +24,9 @@ public class Fuku6uNL implements Player {
 
     @Override
     public void update(GameInfo gameInfo) {
-
+        Log.trace("update()");
+        this.boardSurface.update(gameInfo);
+        listen.update(boardSurface);
     }
 
     @Override
