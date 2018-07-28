@@ -20,6 +20,10 @@ public class BoardSurface {
     private RoleInfo roleInfo = new RoleInfo();
     // 占い師CO人数
     private int numSeerCo = 0;
+    // 占い結果（発言した占い結果）
+    Map<Agent, Species> divinedMap = new HashMap<>();
+    // 占い結果（本当の占い結果）
+    Map<Agent, Species> trueDvinedMap = new HashMap<>();
 
 
     // getter
@@ -90,5 +94,20 @@ public class BoardSurface {
             }
         });
         return coRoleAgentList;
+    }
+
+    /**
+     * speciesで指定された占い判定を受けたエージェントのリストを返す
+     * @param species HUMAN または WEREWOLF
+     * @return 占い判定を受けたエージェントのリスト
+     */
+    public List<Agent> getDivinedAgentList(Species species) {
+        List<Agent> divinedAgentList = new ArrayList<>();
+        divinedMap.forEach((agent, result) -> {
+            if (result.equals(species)) {
+                divinedAgentList.add(agent);
+            }
+        });
+        return divinedAgentList;
     }
 }

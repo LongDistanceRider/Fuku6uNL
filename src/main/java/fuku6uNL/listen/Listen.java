@@ -5,8 +5,9 @@ import fuku6uNL.log.Log;
 import fuku6uNL.observer.Observer;
 import org.aiwolf.client.lib.Content;
 import org.aiwolf.common.data.Agent;
-import org.aiwolf.common.data.Role;
+import org.aiwolf.common.data.Species;
 import org.aiwolf.common.data.Talk;
+
 import java.util.List;
 import java.util.Objects;
 
@@ -73,13 +74,21 @@ public class Listen {
                     // 対抗COのチェック
                     Observer.opposeCo(boardSurface.getCoRole(), submit, content.getRole());
                     // 占い師の人数をチェック
-                    Observer.checkSeerCo(boardSurface.getCoAgentList(Role.SEER));
+                    Observer.checkSeerCo(boardSurface);
                     break;
                 case ESTIMATE:
+                    // 対象が自分かチェック
+                    Observer.estimateTargetMe(boardSurface.getGameInfo().getAgent(), boardSurface.getCoRole(), submit, content.getTarget(), content.getRole());
+                    // 対象が黒出しエージェントかチェック
+                    Observer.estimateTargetBlack(boardSurface.getDivinedAgentList(Species.WEREWOLF), submit, content.getTarget(), content.getRole());
+                    // 対象が白だしエージェントかチェック
+                    Observer.estimateTargetWhite(boardSurface.getDivinedAgentList(Species.HUMAN), submit, content.getTarget(), content.getRole());
                     break;
                     /* --- 能力結果に関する文 --- */
                 case DIVINED:
                     boardSurface.playerDivMap(submit, content.getTarget(), content.getResult()); // 占い結果を保管
+                    // 対象が自分かチェック
+                    Observer.divinedTargetMe(boardSurface.getGameInfo().getAgent(), submit, content.getTarget(), content.getResult());
                     break;
 //                case IDENTIFIED:
 //                    break;
@@ -92,6 +101,12 @@ public class Listen {
 //                    break;
                 case VOTE:
                     boardSurface.playerVote(submit, content.getTarget()); // 投票先発言を保管
+                    // 対象が自分かチェック
+                    Observer.voteTargetMe(boardSurface.getGameInfo().getAgent(), submit, content.getTarget());
+                    // 対象が黒出ししたエージェントかチェック
+                    Observer.voteTargetBlack(boardSurface.getDivinedAgentList(Species.WEREWOLF), submit, content.getTarget());
+                    // 対象が白だししたエージェントがチェック
+                    Observer.voteTargetWhite(boardSurface.getDivinedAgentList(Species.HUMAN), submit, content.getTarget());
                     break;
 //                case ATTACK:
 //                    break;
@@ -116,5 +131,16 @@ public class Listen {
 
     private void nlpTopic(Agent submit, ContentNL contentNl) {
         Log.info("発言者: " + submit + " Mes(NT): " + contentNl);
+        switch (contentNl.getNlTopic()) {
+            case "REQUEST_VOTE":
+                // 対象が自分かチェック
+                break;
+            case "LIAR":
+                break;
+            case "SUSPICIOUS":
+                break;
+            case "TRUST":
+                break;
+        }
     }
 }

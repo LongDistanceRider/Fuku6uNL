@@ -9,6 +9,15 @@ class ContentNL {
     private String nlTopic;
     // target
     private String target;
+
+    public String getNlTopic() {
+        return nlTopic;
+    }
+
+    public String getTarget() {
+        return target;
+    }
+
     ContentNL(String nlTopic, String target) {
         this.nlTopic = nlTopic;
         this.target = target;
