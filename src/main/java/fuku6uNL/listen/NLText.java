@@ -132,7 +132,7 @@ class NLText {
      * @param cast いくつめのtagが欲しいか
      *             例えば「私は占い師で，Agent[01]は人狼でした」の文の場合は，
      *             「私はROLEで，Agent[01]はROLEでした」に変換される．
-     * @return
+     * @return tagに変換された文字列
      */
     List<String> getTagStringList(String tag, int cast) {
         List<String> reTagStringList = new ArrayList<>();
@@ -162,7 +162,7 @@ class NLText {
     }
     private static boolean isChat(String text) {
         for (String filter : filterList) {
-            if (text.indexOf(filter) != -1) {
+            if (text.contains(filter)) {
                 return false;
             }
         }

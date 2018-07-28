@@ -1,6 +1,5 @@
 package fuku6uNL.listen;
 
-import fuku6uNL.board.BoardSurface;
 import fuku6uNL.log.Log;
 import org.aiwolf.common.data.Role;
 import org.aiwolf.common.data.Species;
@@ -84,16 +83,20 @@ class NLP {
                 Log.trace("最大ユークリッド距離獲得照合ファイル文: " + maxComparisonEntry.getKey() + " 距離: " + maxDistance);
                 validEntry.put(maxComparisonEntry.getKey(), maxComparisonEntry.getValue());
             } else {
-                Log.debug("ユークリッド距離不足．tagString: " + tagString + "最大ユークリッド距離獲得照合ファイル文:" + maxComparisonEntry.getKey() + " 距離: " + maxDistance);
+                if (maxComparisonEntry != null) {
+                    Log.debug("ユークリッド距離不足．tagString: " + tagString + "最大ユークリッド距離獲得照合ファイル文:" + maxComparisonEntry.getKey() + " 距離: " + maxDistance);
+                } else {
+                    Log.error("最大ユークリッド距離獲得ができませんでした．");
+                }
             }
         });
 
         // 有効なユークリッド距離を取得できたエントリーのみ処理を行う
         validEntry.forEach((key, value) -> {
             for (int i = 0; i < value.length; i += 3) {
-                String target = null;
-                Role role = null;
-                Species species = null;
+                String target;
+                Role role;
+                Species species;
                 switch (value[i]) {
                     case "COMINGOUT":
                         // <ROLE>照合
@@ -101,7 +104,7 @@ class NLP {
                         if (role != null) {
                             protocolTextList.add("COMINGOUT " + talk.getAgent() + " " + role);   // プロトコル文変換
                         } else {
-                            Log.error("Role型がnullのため変換に失敗しました．talk.getText(): " + talk.getText() + " role: " + role);
+                            Log.error("Role型がnullのため変換に失敗しました．talk.getText(): " + talk.getText());
                             break;
                         }
                         break;
@@ -228,10 +231,10 @@ class NLP {
 
     /**
      * Speciesを取得
-     * @param text
+     * @param text NLText
      * @param number
      *          何番目に出現したROLEタグを取得するか
-     * @return
+     * @return Species
      */
     private Species getSpecies (NLText text, int number) {
         Species species = null;
@@ -250,11 +253,11 @@ class NLP {
     }
     /**
      * Roleを取得
-     * @param text
+     * @param text NLText
      * @param number
      *          照合ファイルの4列目を指定する場合，1列目はKey担っているため，Valueが2列目から始まる．２を指定すると4列目の数字を取ってくる
      *          大抵は2（というか2しかないはず）
-     * @return
+     * @return Role
      */
     private Role getRole (NLText text, int number) {
         Role role = null;

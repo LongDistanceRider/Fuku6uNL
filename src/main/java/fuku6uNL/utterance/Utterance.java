@@ -15,9 +15,9 @@ import java.util.List;
 public class Utterance {
 
     /* すでに発言したかを管理するリスト */
-    List<String> flagList = new ArrayList<>();
+    private List<String> flagList = new ArrayList<>();
     /* 発言キュー */
-    ArrayDeque<String> utteranceQueue = new ArrayDeque<>();
+    private ArrayDeque<String> utteranceQueue = new ArrayDeque<>();
 
     /**
      * キューに発言を追加
@@ -26,7 +26,7 @@ public class Utterance {
      */
     public void offer(String utterance) {
         // 空文字は処理しない
-        if (utterance == "") {
+        if (utterance.equals("")) {
             return;
         }
         // 同じ発言を何度もしないように，フラグ管理を施す

@@ -67,6 +67,7 @@ public class Fuku6uNL implements Player {
     @Override
     public void finish() {
         Log.trace("finish()");
+        Log.endLog();
     }
 
     @Override
