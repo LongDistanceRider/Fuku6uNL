@@ -10,6 +10,7 @@ import org.aiwolf.common.data.Talk;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.Observable;
 
 /**
  * トークリストを読み取り処理を行うクラス
@@ -23,7 +24,7 @@ public class Listen {
     // トークリストをどこまで読み込んだか
     private int talkListHead = 0;
     // BoardSurface
-    private BoardSurface boardSurface;
+    private static BoardSurface boardSurface;
 
     public void update(BoardSurface boardSurface) {
         this.boardSurface = boardSurface;
@@ -134,13 +135,36 @@ public class Listen {
         switch (contentNl.getNlTopic()) {
             case "REQUEST_VOTE":
                 // 対象が自分かチェック
+                Observer.requestVoteTargetMe(boardSurface.getGameInfo().getAgent(), submit, contentNl.getTarget());
+                // 対象が黒出ししたエージェントかチェック
+                Observer.requestVoteTargetBlack(boardSurface.getDivinedAgentList(Species.WEREWOLF), submit, contentNl.getTarget());
+                // 対象が白だししたエージェントがチェック
+                Observer.requestVoteTargetWhite(boardSurface.getDivinedAgentList(Species.HUMAN), submit, contentNl.getTarget());
                 break;
             case "LIAR":
+                // 対象が自分かチェック
+                Observer.liarTargetMe(boardSurface.getGameInfo().getAgent(), submit, contentNl.getTarget());
                 break;
             case "SUSPICIOUS":
+                // 対象が自分かチェック
+                Observer.suspiciousTargetMe(boardSurface.getGameInfo().getAgent(), submit, contentNl.getTarget());
                 break;
             case "TRUST":
+                // 対象が自分かチェック
+                Observer.trustTargetMe(boardSurface.getGameInfo().getAgent(), submit, contentNl.getTarget());
                 break;
         }
+    }
+
+    static Agent convertStrToAgent(String string) {
+        List<Agent> agentList = boardSurface.getGameInfo().getAgentList();
+        for (Agent agent :
+                agentList) {
+            if (agent.toString().equals(string)) {
+                return agent;
+            }
+        }
+        Log.error("stringからAgentへの変換に失敗しました．");
+        return null;
     }
 }

@@ -1,6 +1,7 @@
 package fuku6uNL.listen;
 
 import fuku6uNL.log.Log;
+import org.aiwolf.common.data.Agent;
 import org.aiwolf.common.data.Role;
 import org.aiwolf.common.data.Species;
 import org.aiwolf.common.data.Talk;
@@ -95,6 +96,7 @@ class NLP {
         validEntry.forEach((key, value) -> {
             for (int i = 0; i < value.length; i += 3) {
                 String target;
+                Agent targetAgent;
                 Role role;
                 Species species;
                 switch (value[i]) {
@@ -151,8 +153,9 @@ class NLP {
                         Log.debug("NlTopic: " + value[i]);
                         // <TARGET>照合
                         target = getTargetString(nlText, Integer.parseInt(value[i + 1]));
+                        targetAgent = Listen.convertStrToAgent(target);
                         if (target != null) {
-                            nlpTextList.add(new ContentNL("REQUEST_VOTE", target));
+                            nlpTextList.add(new ContentNL("REQUEST_VOTE", targetAgent));
 //                            // 自分に投票発言をしているか
 //                            Agent ageTarget = convertStringToAgent(target);
 //                            if (boardSurface.getMe().toString().equals(target)) {
@@ -173,8 +176,9 @@ class NLP {
                         Log.debug("NlTopic: " + value[i]);
                         // <TARGET>照合
                         target = getTargetString(nlText, Integer.parseInt(value[i + 1]));
+                        targetAgent = Listen.convertStrToAgent(target);
                         if (target != null) {
-                            nlpTextList.add(new ContentNL("LIAR", target));
+                            nlpTextList.add(new ContentNL("LIAR", targetAgent));
 //                            // 自分に嘘つき発言をしているか
 //                            if (boardSurface.getMe().toString().equals(target)) {
 //                                Utterance.getInstance().offerNL(">>" + talk.getAgent() + " " + "そう言う君も本当のことを言ってるか怪しい。");
@@ -188,8 +192,9 @@ class NLP {
                         Log.debug("NlTopic: " + value[i]);
                         // <TARGET>照合
                         target = getTargetString(nlText, Integer.parseInt(value[i + 1]));
+                        targetAgent = Listen.convertStrToAgent(target);
                         if (target != null) {
-                            nlpTextList.add(new ContentNL("SUSPICIOUS", target));
+                            nlpTextList.add(new ContentNL("SUSPICIOUS", targetAgent));
 //                            // 自分に疑い発言をしているか
 //                            if (boardSurface.getMe().toString().equals(target)) {
 //                                Utterance.getInstance().offerNL(">>" + talk.getAgent() + " " + "ボクは" + talk.getAgent() + "のこと信じてるよ。半分くらいね。");
@@ -203,8 +208,9 @@ class NLP {
                         Log.debug("NlTopic: " + value[i]);
                         // <TARGET>照合
                         target = getTargetString(nlText, Integer.parseInt(value[i + 1]));
+                        targetAgent = Listen.convertStrToAgent(target);
                         if (target != null) {
-                            nlpTextList.add(new ContentNL("TRUST", target));
+                            nlpTextList.add(new ContentNL("TRUST", targetAgent));
 //                            // 自分に疑い発言をしているか
 //                            if (boardSurface.getMe().toString().equals(target)) {
 //                                Utterance.getInstance().offerNL(">>" + talk.getAgent() + " " + "ボクも" + talk.getAgent() + "のこと信じてるよ！");

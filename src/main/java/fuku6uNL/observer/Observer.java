@@ -134,4 +134,40 @@ public class Observer {
             Utterance.getInstance().offer(">>" + submit + " え？" + target + "は白だよ？");
         }
     }
+
+    public static void requestVoteTargetMe(Agent me, Agent submit, Agent target) {
+        if (target.equals(me)) {
+            Utterance.getInstance().offer(">>" + submit + " 反対反対！" + submit + "の投票に反対です！");
+        }
+    }
+
+    public static void requestVoteTargetBlack(List<Agent> divinedAgentList, Agent submit, Agent target) {
+        if (divinedAgentList.contains(target)) {
+            Utterance.getInstance().offer(">>" + submit + " 賛成！ボクも" + target + "に投票するよ！");
+        }
+    }
+
+    public static void requestVoteTargetWhite(List<Agent> divinedAgentList, Agent submit, Agent target) {
+        if (divinedAgentList.contains(target)) {
+            Utterance.getInstance().offer(">>" + submit + " 待って待って、" + target + "は白だって！");
+        }
+    }
+
+    public static void liarTargetMe(Agent me, Agent submit, Agent target) {
+        if (target.equals(me)) {
+            Utterance.getInstance().offer(">>" + submit + " ボクを嘘つき呼ばわりですか？そういうの良くないですよ。");
+        }
+    }
+
+    public static void suspiciousTargetMe(Agent me, Agent submit, Agent target) {
+        if (target.equals(me)) {
+            Utterance.getInstance().offer(">>" + submit + " ボクを疑うの？ボクは人間だよ！");
+        }
+    }
+
+    public static void trustTargetMe(Agent me, Agent submit, Agent target) {
+        if (target.equals(me)) {
+            Utterance.getInstance().offer(">>" + submit + " ボクも" + submit + "を信じてるよ！");
+        }
+    }
 }

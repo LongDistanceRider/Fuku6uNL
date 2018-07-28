@@ -1,5 +1,7 @@
 package fuku6uNL.listen;
 
+import org.aiwolf.common.data.Agent;
+
 /**
  * Content型の自然言語話題バージョン
  * 話題と発言先を保持する構造体
@@ -8,17 +10,17 @@ class ContentNL {
     // NL話題
     private String nlTopic;
     // target
-    private String target;
+    private Agent target;
 
     public String getNlTopic() {
         return nlTopic;
     }
 
-    public String getTarget() {
+    public Agent getTarget() {
         return target;
     }
 
-    ContentNL(String nlTopic, String target) {
+    ContentNL(String nlTopic, Agent target) {
         this.nlTopic = nlTopic;
         this.target = target;
     }
