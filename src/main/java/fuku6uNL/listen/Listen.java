@@ -2,8 +2,10 @@ package fuku6uNL.listen;
 
 import fuku6uNL.board.BoardSurface;
 import fuku6uNL.log.Log;
+import fuku6uNL.observer.Observer;
 import org.aiwolf.client.lib.Content;
 import org.aiwolf.common.data.Agent;
+import org.aiwolf.common.data.Role;
 import org.aiwolf.common.data.Talk;
 import java.util.List;
 import java.util.Objects;
@@ -68,6 +70,10 @@ public class Listen {
                     /* --- 意図表明に関する文 --- */
                 case COMINGOUT:
                     boardSurface.playerCoRole(submit, content.getRole()); // CO役職を保管
+                    // 対抗COのチェック
+                    Observer.opposeCo(boardSurface.getCoRole(), submit, content.getRole());
+                    // 占い師の人数をチェック
+                    Observer.checkSeerCo(boardSurface.getCoAgentList(Role.SEER));
                     break;
                 case ESTIMATE:
                     break;

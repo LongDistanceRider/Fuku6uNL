@@ -26,4 +26,8 @@ class PlayerInfo {
     public void addVote(Agent target) {
         voteList.add(target);
     }
+
+    public Role getCoRole() {
+        return coRole;
+    }
 }

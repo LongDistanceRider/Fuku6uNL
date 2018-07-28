@@ -37,6 +37,8 @@ public class Fuku6uNL implements Player {
     @Override
     public String talk() {
         Log.trace("talk()");
+        // TODO COした役職をBoardSurfaceにセットすること（狂人役職の占い師CO役職）
+        // TODO COする時にObserver.opposeCOをすること
         return null;
     }
 

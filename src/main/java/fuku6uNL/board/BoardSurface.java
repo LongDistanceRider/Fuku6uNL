@@ -4,7 +4,10 @@ import org.aiwolf.common.data.Agent;
 import org.aiwolf.common.data.Role;
 import org.aiwolf.common.data.Species;
 import org.aiwolf.common.net.GameInfo;
+
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class BoardSurface {
@@ -13,10 +16,26 @@ public class BoardSurface {
     private GameInfo gameInfo;
     // 各プレイヤー情報（自分を除く)
     private Map<Agent, PlayerInfo> playerInfoMap = new HashMap<>();
+    // 役職持ち情報
+    private RoleInfo roleInfo = new RoleInfo();
+    // 占い師CO人数
+    private int numSeerCo = 0;
+
 
     // getter
     public GameInfo getGameInfo() {
         return gameInfo;
+    }
+    public Role getCoRole() {
+        return roleInfo.getCoRole();
+    }
+    // setter
+    public void setNumSeerCo(int numSeerCo) {
+        this.numSeerCo = numSeerCo;
+    }
+
+    public void setCoRole (Role role) {
+        roleInfo.setCoRole(role);
     }
 
     public BoardSurface(GameInfo gameInfo) {
@@ -29,7 +48,6 @@ public class BoardSurface {
     public void update(GameInfo gameInfo) {
         this.gameInfo = gameInfo;
     }
-
     /**
      * submitが発言したCO役職を保管
      *
@@ -59,4 +77,18 @@ public class BoardSurface {
         playerInfoMap.get(submit).addVote(target);
     }
 
+    /**
+     * ある役職をCOしたエージェントのリストを返す
+     * @param role COした役職
+     * @return roleをCOしたエージェントのリスト
+     */
+    public List<Agent> getCoAgentList(Role role) {
+        List<Agent> coRoleAgentList = new ArrayList<>();
+        playerInfoMap.forEach((agent, playerInfo) -> {
+            if (playerInfo.getCoRole().equals(role)) {
+                coRoleAgentList.add(agent);
+            }
+        });
+        return coRoleAgentList;
+    }
 }
