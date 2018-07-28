@@ -3,8 +3,11 @@ package fuku6uNL.Player;
 import fuku6uNL.board.BoardSurface;
 import fuku6uNL.listen.Listen;
 import fuku6uNL.log.Log;
+import fuku6uNL.role.*;
+import fuku6uNL.utterance.Utterance;
 import org.aiwolf.common.data.Agent;
 import org.aiwolf.common.data.Player;
+import org.aiwolf.common.data.Role;
 import org.aiwolf.common.net.GameInfo;
 import org.aiwolf.common.net.GameSetting;
 
@@ -14,6 +17,8 @@ public class Fuku6uNL implements Player {
     private BoardSurface boardSurface;
     // Listen
     private Listen listen = new Listen();
+    // 役職ごとの処理
+    private AbstractRole assignRole;
 
     @Override
     public void initialize(GameInfo gameInfo, GameSetting gameSetting) {
@@ -32,6 +37,37 @@ public class Fuku6uNL implements Player {
     @Override
     public void dayStart() {
         Log.trace("dayStart()");
+        Log.info("=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=");
+        Log.info("\t" + boardSurface.getGameInfo().getDay() + "day start : My number is " + boardSurface.getGameInfo().getAgent().toString());
+        Log.info("=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=");
+
+        switch (boardSurface.getGameInfo().getDay()) {
+            case 0:
+                Utterance.getInstance().offer("こんにちは！これからよろしくね！");
+                break;
+            case 1:
+                // 役職セット
+                Role role = boardSurface.getGameInfo().getRole();
+                switch (role) {
+                    case VILLAGER:
+                        assignRole = new Villager();
+                        break;
+                    case SEER:
+                        assignRole = new Seer();
+                        break;
+                    case POSSESSED:
+                        assignRole = new Possessed();
+                        break;
+                    case WEREWOLF:
+                        assignRole = new Werewolf();
+                        break;
+                }
+                break;
+            default:
+                // 役職ごとの処理
+                assignRole.dayStart(boardSurface);
+        }
+
     }
 
     @Override

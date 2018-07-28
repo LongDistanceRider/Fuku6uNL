@@ -23,8 +23,7 @@ public class BoardSurface {
     // 占い結果（発言した占い結果）
     Map<Agent, Species> divinedMap = new HashMap<>();
     // 占い結果（本当の占い結果）
-    Map<Agent, Species> trueDvinedMap = new HashMap<>();
-
+    Map<Agent, Species> trueDivinedMap = new HashMap<>();
 
     // getter
     public GameInfo getGameInfo() {
@@ -34,6 +33,7 @@ public class BoardSurface {
         return roleInfo.getCoRole();
     }
     // setter
+
     public void setNumSeerCo(int numSeerCo) {
         this.numSeerCo = numSeerCo;
     }
@@ -100,7 +100,7 @@ public class BoardSurface {
     }
 
     /**
-     * speciesで指定された占い判定を受けたエージェントのリストを返す
+     * speciesで指定された占い判定を受けたエージェントのリストを返す（自分の（発言した）占い結果のみ）
      * @param species HUMAN または WEREWOLF
      * @return 占い判定を受けたエージェントのリスト
      */
@@ -112,5 +112,38 @@ public class BoardSurface {
             }
         });
         return divinedAgentList;
+    }
+
+    /**
+     * speciesで指定された占い判定を受けたエージェントのリストを返す（自分の（本当の）占い結果のみ）
+     * @param species HUMAN または WEREWOLF
+     * @return 占い判定を受けたエージェントのリスト
+     */
+    public List<Agent> getTrueDivinedAgentList(Species species) {
+        List<Agent> trueDivinedAgentList = new ArrayList<>();
+        trueDivinedMap.forEach((agent, result) -> {
+            if (result.equals(species)) {
+                trueDivinedAgentList.add(agent);
+            }
+        });
+        return trueDivinedAgentList;
+    }
+
+    /**
+     * 占い結果（発言した）を保管
+     * @param target 占い先
+     * @param result 占い結果
+     */
+    public void putDivinedMap(Agent target, Species result) {
+        divinedMap.put(target, result);
+    }
+
+    /**
+     * 占い結果（本当）を保管
+     * @param target 占い先
+     * @param result 占い結果
+     */
+    public void putTrueDivinedMap(Agent target, Species result) {
+        trueDivinedMap.put(target, result);
     }
 }
