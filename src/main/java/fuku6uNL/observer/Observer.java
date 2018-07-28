@@ -16,11 +16,13 @@ public class Observer {
      * @param role 発言された役職
      */
     public static void opposeCo(Role myCoRole, Agent submit, Role role) {
-        switch (myCoRole) {
-            case SEER:
-                if (role.equals(Role.SEER)) {
-                    Utterance.getInstance().offer(submit + "は偽物だよ！騙されないで！");
-                }
+        if (myCoRole != null) {
+            switch (myCoRole) {
+                case SEER:
+                    if (role.equals(Role.SEER)) {
+                        Utterance.getInstance().offer(submit + "は偽物だよ！騙されないで！");
+                    }
+            }
         }
     }
 
@@ -40,10 +42,13 @@ public class Observer {
     public static void checkSeerCo(BoardSurface boardSurface) {
         List<Agent> seerCoAgentList = boardSurface.getCoAgentList(Role.SEER);
         // 占い師COしている人数を更新
-        if (boardSurface.getCoRole().equals(Role.SEER)) {
-            boardSurface.setNumSeerCo(seerCoAgentList.size() + 1);
-        } else {
-            boardSurface.setNumSeerCo(seerCoAgentList.size());
+        Role coRole = boardSurface.getCoRole();
+        if (coRole != null) {
+            if (coRole.equals(Role.SEER)) {
+                boardSurface.setNumSeerCo(seerCoAgentList.size() + 1);
+            } else {
+                boardSurface.setNumSeerCo(seerCoAgentList.size());
+            }
         }
 
         // 2人の場合

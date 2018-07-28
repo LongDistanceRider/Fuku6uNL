@@ -89,8 +89,11 @@ public class BoardSurface {
     public List<Agent> getCoAgentList(Role role) {
         List<Agent> coRoleAgentList = new ArrayList<>();
         playerInfoMap.forEach((agent, playerInfo) -> {
-            if (playerInfo.getCoRole().equals(role)) {
-                coRoleAgentList.add(agent);
+            Role coRole = playerInfo.getCoRole();
+            if (coRole != null) {
+                if (coRole.equals(role)) {
+                    coRoleAgentList.add(agent);
+                }
             }
         });
         return coRoleAgentList;

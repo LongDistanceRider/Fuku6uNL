@@ -10,7 +10,6 @@ import org.aiwolf.common.data.Talk;
 
 import java.util.List;
 import java.util.Objects;
-import java.util.Observable;
 
 /**
  * トークリストを読み取り処理を行うクラス
