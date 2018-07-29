@@ -30,4 +30,8 @@ class PlayerInfo {
     public Role getCoRole() {
         return coRole;
     }
+
+    public List<Agent> getVoteList() {
+        return voteList;
+    }
 }

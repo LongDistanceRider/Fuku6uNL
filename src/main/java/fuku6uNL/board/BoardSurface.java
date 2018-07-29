@@ -10,6 +10,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static java.util.function.UnaryOperator.identity;
+import static java.util.stream.Collectors.counting;
+import static java.util.stream.Collectors.groupingBy;
+
 public class BoardSurface {
 
     // GameInfo
@@ -155,5 +159,46 @@ public class BoardSurface {
      */
     public void putTrueDivinedMap(Agent target, Species result) {
         trueDivinedMap.put(target, result);
+    }
+
+    /**
+     * 最大投票数を受けたAgentを返す
+     * @return
+     */
+    public Agent maxVotedAgent() {
+        Map<Agent, Integer> votedMap = getVotedAgentMap();
+
+        int maxCount = 0;
+        Agent maxVotedAgent = null;
+        for (Map.Entry<Agent, Integer> voteEntry :
+                votedMap.entrySet()) {
+            if (voteEntry.getValue() < maxCount) {
+                maxVotedAgent = voteEntry.getKey();
+            }
+        }
+
+        return maxVotedAgent;
+    }
+    /**
+     * 投票されたAgentリストを返す（最後に投票発言をしたエージェントだけをリスト追加）
+     *
+     * @return 投票されたAgentを追加したリスト．
+     *          リストの中身は{Agent[01], Agent[01], Agent[02]}など
+     */
+    private Map<Agent, Integer> getVotedAgentMap () {
+        List<Agent> votedAgentList = new ArrayList<>();
+        playerInfoMap.forEach((agent, playerInfo) -> {
+            List<Agent> votedAgent = playerInfo.getVoteList();
+            if (!votedAgent.isEmpty()) {
+                votedAgentList.add(votedAgent.get(votedAgent.size()));
+            }
+        });
+
+        Map<Agent, Integer> votedMap = new HashMap<>();
+        for (Agent votedAgent :
+                votedAgentList) {
+            votedMap.merge(votedAgent, 1, (key, value) -> votedMap.get(key) + 1);
+        }
+        return votedMap;
     }
 }

@@ -58,11 +58,6 @@ public class Seer extends AbstractRole {
     }
 
     @Override
-    public void talk() {
-
-    }
-
-    @Override
     public void finish() {
 
     }

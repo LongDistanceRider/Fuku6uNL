@@ -59,11 +59,6 @@ public class Possessed extends AbstractRole {
     }
 
     @Override
-    public void talk() {
-
-    }
-
-    @Override
     public void finish() {
 
     }
