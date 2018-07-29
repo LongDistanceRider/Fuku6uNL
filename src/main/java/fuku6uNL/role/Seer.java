@@ -13,9 +13,6 @@ import java.util.List;
 
 public class Seer extends AbstractRole {
 
-    // 強制投票先
-    private Agent forceVoteTarget;
-
     @Override
     public void dayStart(BoardSurface boardSurface) {
         forceVoteTarget = null;
@@ -35,19 +32,12 @@ public class Seer extends AbstractRole {
             if (result.equals(Species.HUMAN) && Util.cheatingCoin(0.8)) {
                 // 占い先を探す
                 List<Agent> candidateAgentList = gameInfo.getAliveAgentList();
-                candidateAgentList.remove(gameInfo.getAgent()); // 自分は除く
-                // 占い結果（発言と本当）が出ているものは除く
-                candidateAgentList.removeAll(boardSurface.getDivinedAgentList(Species.HUMAN));
-                candidateAgentList.removeAll(boardSurface.getDivinedAgentList(Species.WEREWOLF));
+                // 占い結果（本当）が出ているものは除く
                 candidateAgentList.removeAll(boardSurface.getTrueDivinedAgentList(Species.HUMAN));
                 candidateAgentList.removeAll(boardSurface.getTrueDivinedAgentList(Species.WEREWOLF));
 
-                if (!candidateAgentList.isEmpty()) {
-                    Agent lieTarget = Util.randomElementSelect(candidateAgentList);
-                    boardSurface.putDivinedMap(lieTarget, Species.WEREWOLF);
-                    Utterance.getInstance().offer("占い結果は、" + lieTarget + "が人狼！やったね！");
-                    forceVoteTarget = lieTarget;
-                }
+                // 偽占い結果作成と発言
+                lieDivined(boardSurface, candidateAgentList);
             } else {
                 boardSurface.putDivinedMap(target, result);
                 boardSurface.putTrueDivinedMap(target, result);
@@ -60,7 +50,7 @@ public class Seer extends AbstractRole {
     }
 
     @Override
-    public Agent vote() {
+    public Agent vote(BoardSurface boardSurface) {
         if (forceVoteTarget != null) {
             return forceVoteTarget;
         }

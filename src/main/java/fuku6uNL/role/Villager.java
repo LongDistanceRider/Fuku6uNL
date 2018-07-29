@@ -10,7 +10,7 @@ public class Villager extends AbstractRole {
     }
 
     @Override
-    public Agent vote() {
+    public Agent vote(BoardSurface boardSurface) {
         return null;
     }
 

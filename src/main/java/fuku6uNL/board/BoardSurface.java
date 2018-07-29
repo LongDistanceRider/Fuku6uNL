@@ -24,6 +24,8 @@ public class BoardSurface {
     Map<Agent, Species> divinedMap = new HashMap<>();
     // 占い結果（本当の占い結果）
     Map<Agent, Species> trueDivinedMap = new HashMap<>();
+    // PP
+    private boolean PP = false;
 
     // getter
     public GameInfo getGameInfo() {
@@ -32,7 +34,15 @@ public class BoardSurface {
     public Role getCoRole() {
         return roleInfo.getCoRole();
     }
+
+    public boolean isPP() {
+        return PP;
+    }
+
     // setter
+    public void setPP(boolean PP) {
+        this.PP = PP;
+    }
 
     public void setNumSeerCo(int numSeerCo) {
         this.numSeerCo = numSeerCo;
@@ -48,10 +58,10 @@ public class BoardSurface {
                 .filter(agent -> agent != gameInfo.getAgent())
                 .forEach(agent -> playerInfoMap.put(agent, new PlayerInfo()));
     }
-
     public void update(GameInfo gameInfo) {
         this.gameInfo = gameInfo;
     }
+
     /**
      * submitが発言したCO役職を保管
      *
