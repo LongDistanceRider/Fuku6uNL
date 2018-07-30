@@ -75,6 +75,18 @@ public class Utterance {
     }
 
     /**
+     * Speciesを自然言語（白黒）に変換
+     * @param species
+     * @return
+     */
+    public static String convertSpeciesToWhiteBlack (Species species) {
+        if (species.equals(Species.HUMAN)) {
+            return "白";
+        }
+        return "黒";
+    }
+
+    /**
      * Roleを自然言語に変換
      */
     public static String convertRoleToNl (Role role) {

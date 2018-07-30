@@ -4,15 +4,12 @@ import org.aiwolf.common.data.Agent;
 import org.aiwolf.common.data.Role;
 import org.aiwolf.common.data.Species;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 class PlayerInfo {
 
     private Role coRole;
-    private Map<Agent, Species> divinedMap = new HashMap<>();
+    private Map<Agent, Species> divinedMap = new LinkedHashMap<>();
     private List<Agent> voteList = new ArrayList<>();
 
     public void addCoRole(Role coRole) {

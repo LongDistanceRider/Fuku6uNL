@@ -11,6 +11,7 @@ import org.aiwolf.common.net.GameInfo;
 import org.aiwolf.common.net.GameSetting;
 
 import java.util.List;
+import java.util.Map;
 
 public class Fuku6uNL implements Player {
 
@@ -101,12 +102,46 @@ public class Fuku6uNL implements Player {
         if (turn == 5) {
             // 占い結果について確認
             List<Agent> seerAgent = boardSurface.getCoAgentList(Role.SEER);
-            seerAgent.forEach(agent -> {
-                boardSurface.getDivinedMap(agent);
-
-            });
+            String utteranceString = "";
+            for (Agent seer :
+                    seerAgent) {
+                Map.Entry<Agent, Species> divinedMapEntry = boardSurface.getLatestDivinedMap(seer);
+                if (divinedMapEntry != null) {
+                    if (!utteranceString.equals("")) {
+                        utteranceString += "を、";
+                    }
+                    utteranceString += (seer+ "は" + divinedMapEntry.getKey() + "に" + Utterance.convertSpeciesToWhiteBlack(divinedMapEntry.getValue()));
+                } else {
+                    Utterance.getInstance().offer(seer +"って占い結果話したっけ？");
+                }
+            }
+            if (!utteranceString.equals("")) {
+                utteranceString += "を出したよね。";
+                Utterance.getInstance().offer(utteranceString);
+            }
+            utteranceString = "";
             // 投票者と投票先についてまとめる
+            List<Agent> voterAgent = boardSurface.getGameInfo().getAliveAgentList();
+            voterAgent.remove(boardSurface.getGameInfo().getAgent());
+            for (Agent voter :
+                    voterAgent) {
+                Agent target = boardSurface.submitVoteAndTarget(voter);
+                if (target != null) {
+                    if (!utteranceString.equals("")) {
+                        utteranceString += "で、";
+                    }
+                    utteranceString += voter + "は" + target + "に投票";
+                }
+            }
+            if (!utteranceString.equals("")) {
+                utteranceString += "だね。";
+                Utterance.getInstance().offer(utteranceString);
+            }
             // 最多被投票数について確認
+            Agent votestTarget = boardSurface.maxVotedAgent();
+            if (votestTarget != null) {
+                Utterance.getInstance().offer("最多投票先は、" + votestTarget + "だね。");
+            }
 
 
         }

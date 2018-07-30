@@ -189,8 +189,7 @@ public class BoardSurface {
     /**
      * 投票されたAgentリストを返す（最後に投票発言をしたエージェントだけをリスト追加）
      *
-     * @return 投票されたAgentを追加したリスト．
-     *          リストの中身は{Agent[01], Agent[01], Agent[02]}など
+     * @return key=被投票者 value=投票数のマップ
      */
     private Map<Agent, Integer> getVotedAgentMap () {
         List<Agent> votedAgentList = new ArrayList<>();
@@ -216,5 +215,33 @@ public class BoardSurface {
      */
     public Map<Agent, Species> getDivinedMap(Agent seer) {
         return playerInfoMap.get(seer).getDivinedMap();
+    }
+
+    /**
+     * Agentが最後に発言した占い結果を返す
+     * @param seer 占い結果を発言したエージェント
+     * @return Agentが最後に発言した占い結果（nullあり）
+     */
+    public Map.Entry<Agent, Species> getLatestDivinedMap(Agent seer) {
+        Map<Agent, Species> divinedMap = playerInfoMap.get(seer).getDivinedMap();
+        Map.Entry<Agent, Species> latestDivinedMap = null;
+        for (Map.Entry<Agent, Species> divinedMapEntry:
+                divinedMap.entrySet()) {
+            latestDivinedMap = divinedMapEntry;
+        }
+        return latestDivinedMap;
+    }
+
+    /**
+     * submitが最後に発言した投票先エージェントを取得
+     * @param submit
+     * @return
+     */
+    public Agent submitVoteAndTarget(Agent submit) {
+        List<Agent> voteList = playerInfoMap.get(submit).getVoteList();
+        if (!voteList.isEmpty()) {
+            return voteList.get(voteList.size());
+        }
+        return null;
     }
 }
