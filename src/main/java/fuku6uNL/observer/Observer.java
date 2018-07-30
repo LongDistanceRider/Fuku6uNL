@@ -53,7 +53,7 @@ public class Observer {
 
         // 2人の場合
         if (seerCoAgentList.size() == 2) {
-            Utterance.getInstance().offer("占い師COしている人が2人いるね。どっちかが狂人かな？");
+            Utterance.getInstance().offer("占い師COしている人が2人いるね。1人は狂人かな？");
         }
 
         // 3人の場合

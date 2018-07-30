@@ -10,9 +10,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static java.util.function.UnaryOperator.identity;
-import static java.util.stream.Collectors.counting;
-import static java.util.stream.Collectors.groupingBy;
 
 public class BoardSurface {
 
@@ -38,30 +35,39 @@ public class BoardSurface {
     public Role getCoRole() {
         return roleInfo.getCoRole();
     }
-
     public boolean isPP() {
         return PP;
+    }
+    public int getNumSeerCo() {
+        return numSeerCo;
     }
 
     // setter
     public void setPP(boolean PP) {
         this.PP = PP;
     }
-
     public void setNumSeerCo(int numSeerCo) {
         this.numSeerCo = numSeerCo;
     }
-
     public void setCoRole (Role role) {
         roleInfo.setCoRole(role);
     }
 
+    /**
+     * Constructor
+     * @param gameInfo ゲーム情報
+     */
     public BoardSurface(GameInfo gameInfo) {
         this.gameInfo = gameInfo;
         gameInfo.getAgentList().stream()
                 .filter(agent -> agent != gameInfo.getAgent())
                 .forEach(agent -> playerInfoMap.put(agent, new PlayerInfo()));
     }
+
+    /**
+     * update()で呼び出される関数
+     * @param gameInfo
+     */
     public void update(GameInfo gameInfo) {
         this.gameInfo = gameInfo;
     }
@@ -179,6 +185,7 @@ public class BoardSurface {
 
         return maxVotedAgent;
     }
+
     /**
      * 投票されたAgentリストを返す（最後に投票発言をしたエージェントだけをリスト追加）
      *
@@ -200,5 +207,14 @@ public class BoardSurface {
             votedMap.merge(votedAgent, 1, (key, value) -> votedMap.get(key) + 1);
         }
         return votedMap;
+    }
+
+    /**
+     * Agentが発言した占い結果を返す
+     * @param seer 占い結果を発言したエージェント
+     * @return Agentが発言した占い結果（nullあり)
+     */
+    public Map<Agent, Species> getDivinedMap(Agent seer) {
+        return playerInfoMap.get(seer).getDivinedMap();
     }
 }

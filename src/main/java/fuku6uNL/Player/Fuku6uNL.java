@@ -6,10 +6,7 @@ import fuku6uNL.log.Log;
 import fuku6uNL.role.*;
 import fuku6uNL.util.Util;
 import fuku6uNL.utterance.Utterance;
-import org.aiwolf.common.data.Agent;
-import org.aiwolf.common.data.Player;
-import org.aiwolf.common.data.Role;
-import org.aiwolf.common.data.Species;
+import org.aiwolf.common.data.*;
 import org.aiwolf.common.net.GameInfo;
 import org.aiwolf.common.net.GameSetting;
 
@@ -77,6 +74,42 @@ public class Fuku6uNL implements Player {
     @Override
     public String talk() {
         Log.trace("talk()");
+        // ターン数取得
+        List<Talk> talkList = boardSurface.getGameInfo().getTalkList();
+        int turn = talkList.get(talkList.size()).getTurn();
+        // ターン数3の時に状況確認と雑談発言
+        if (turn == 3) {
+            // 占い師COがn人の場合
+            int seerNum = boardSurface.getNumSeerCo();
+            Utterance.getInstance().offer("今回は" + seerNum +"-0進行だね。");
+            switch (seerNum) {
+                case 0:
+                    Utterance.getInstance().offer("あれ？占い師さんCOしてなかったかな？");
+                    break;
+                case 1:
+                    Utterance.getInstance().offer("対抗COなし？");
+                    break;
+                case 2:
+                    Utterance.getInstance().offer("いつも通りの進行だね。");
+                    break;
+                case 3:
+                    Utterance.getInstance().offer("占い師ローラー確定だね。");
+                    break;
+            }
+        }
+        // ターン数5の時に状況確認と雑談発言
+        if (turn == 5) {
+            // 占い結果について確認
+            List<Agent> seerAgent = boardSurface.getCoAgentList(Role.SEER);
+            seerAgent.forEach(agent -> {
+                boardSurface.getDivinedMap(agent);
+
+            });
+            // 投票者と投票先についてまとめる
+            // 最多被投票数について確認
+
+
+        }
         return Utterance.getInstance().poll();
     }
 

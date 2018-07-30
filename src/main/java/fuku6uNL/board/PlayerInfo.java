@@ -34,4 +34,8 @@ class PlayerInfo {
     public List<Agent> getVoteList() {
         return voteList;
     }
+
+    public Map<Agent, Species> getDivinedMap() {
+        return divinedMap;
+    }
 }
