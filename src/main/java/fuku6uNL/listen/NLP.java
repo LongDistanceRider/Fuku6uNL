@@ -156,6 +156,7 @@ class NLP {
                         targetAgent = Listen.convertStrToAgent(target);
                         if (target != null) {
                             nlpTextList.add(new ContentNL("REQUEST_VOTE", targetAgent));
+                            protocolTextList.add("VOTE" + target);
 //                            // 自分に投票発言をしているか
 //                            Agent ageTarget = convertStringToAgent(target);
 //                            if (boardSurface.getMe().toString().equals(target)) {
