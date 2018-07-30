@@ -34,9 +34,7 @@ public class Observer {
      */
     public static void opposeCo(BoardSurface boardSurface, Role coRole) {
         List<Agent> opposeCoAgentList = boardSurface.getCoAgentList(coRole);
-        opposeCoAgentList.forEach(agent -> {
-            Utterance.getInstance().offer(agent + "に対抗します！私が" + Utterance.convertRoleToNl(coRole) + "です！");
-        });
+        opposeCoAgentList.forEach(agent -> Utterance.getInstance().offer(agent + "に対抗します！私が" + Utterance.convertRoleToNl(coRole) + "です！"));
     }
 
     public static void checkSeerCo(BoardSurface boardSurface) {

@@ -102,24 +102,24 @@ public class Fuku6uNL implements Player {
         if (turn == 5) {
             // 占い結果について確認
             List<Agent> seerAgent = boardSurface.getCoAgentList(Role.SEER);
-            String utteranceString = "";
+            StringBuilder utteranceString = new StringBuilder();
             for (Agent seer :
                     seerAgent) {
                 Map.Entry<Agent, Species> divinedMapEntry = boardSurface.getLatestDivinedMap(seer);
                 if (divinedMapEntry != null) {
-                    if (!utteranceString.equals("")) {
-                        utteranceString += "を、";
+                    if (!utteranceString.toString().equals("")) {
+                        utteranceString.append("を、");
                     }
-                    utteranceString += (seer+ "は" + divinedMapEntry.getKey() + "に" + Utterance.convertSpeciesToWhiteBlack(divinedMapEntry.getValue()));
+                    utteranceString.append(seer).append("は").append(divinedMapEntry.getKey()).append("に").append(Utterance.convertSpeciesToWhiteBlack(divinedMapEntry.getValue()));
                 } else {
                     Utterance.getInstance().offer(seer +"って占い結果話したっけ？");
                 }
             }
-            if (!utteranceString.equals("")) {
-                utteranceString += "を出したよね。";
-                Utterance.getInstance().offer(utteranceString);
+            if (!utteranceString.toString().equals("")) {
+                utteranceString.append("を出したよね。");
+                Utterance.getInstance().offer(utteranceString.toString());
             }
-            utteranceString = "";
+            utteranceString = new StringBuilder();
             // 投票者と投票先についてまとめる
             List<Agent> voterAgent = boardSurface.getGameInfo().getAliveAgentList();
             voterAgent.remove(boardSurface.getGameInfo().getAgent());
@@ -127,22 +127,21 @@ public class Fuku6uNL implements Player {
                     voterAgent) {
                 Agent target = boardSurface.submitVoteAndTarget(voter);
                 if (target != null) {
-                    if (!utteranceString.equals("")) {
-                        utteranceString += "で、";
+                    if (!utteranceString.toString().equals("")) {
+                        utteranceString.append("で、");
                     }
-                    utteranceString += voter + "は" + target + "に投票";
+                    utteranceString.append(voter).append("は").append(target).append("に投票");
                 }
             }
-            if (!utteranceString.equals("")) {
-                utteranceString += "だね。";
-                Utterance.getInstance().offer(utteranceString);
+            if (!utteranceString.toString().equals("")) {
+                utteranceString.append("だね。");
+                Utterance.getInstance().offer(utteranceString.toString());
             }
             // 最多被投票数について確認
-            Agent votestTarget = boardSurface.maxVotedAgent();
-            if (votestTarget != null) {
-                Utterance.getInstance().offer("最多投票先は、" + votestTarget + "だね。");
+            Agent maxVoteTarget = boardSurface.maxVotedAgent();
+            if (maxVoteTarget != null) {
+                Utterance.getInstance().offer("最多投票先は、" + maxVoteTarget + "だね。");
             }
-
 
         }
         return Utterance.getInstance().poll();
