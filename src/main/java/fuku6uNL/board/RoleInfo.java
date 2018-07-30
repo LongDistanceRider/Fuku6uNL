@@ -6,11 +6,11 @@ class RoleInfo {
 
     private Role coRole;
 
-    public Role getCoRole() {
+    Role getCoRole() {
         return coRole;
     }
 
-    public void setCoRole(Role coRole) {
+    void setCoRole(Role coRole) {
         this.coRole = coRole;
     }
 }

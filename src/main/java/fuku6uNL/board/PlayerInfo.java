@@ -12,27 +12,27 @@ class PlayerInfo {
     private Map<Agent, Species> divinedMap = new LinkedHashMap<>();
     private List<Agent> voteList = new ArrayList<>();
 
-    public void addCoRole(Role coRole) {
+    void addCoRole(Role coRole) {
         this.coRole = coRole;
     }
 
-    public void putDivined(Agent target, Species result) {
+    void putDivined(Agent target, Species result) {
         divinedMap.put(target, result);
     }
 
-    public void addVote(Agent target) {
+    void addVote(Agent target) {
         voteList.add(target);
     }
 
-    public Role getCoRole() {
+    Role getCoRole() {
         return coRole;
     }
 
-    public List<Agent> getVoteList() {
+    List<Agent> getVoteList() {
         return voteList;
     }
 
-    public Map<Agent, Species> getDivinedMap() {
+    Map<Agent, Species> getDivinedMap() {
         return divinedMap;
     }
 }

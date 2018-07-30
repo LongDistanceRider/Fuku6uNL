@@ -12,11 +12,11 @@ class ContentNL {
     // target
     private Agent target;
 
-    public String getNlTopic() {
+    String getNlTopic() {
         return nlTopic;
     }
 
-    public Agent getTarget() {
+    Agent getTarget() {
         return target;
     }
 

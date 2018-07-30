@@ -22,9 +22,9 @@ public class BoardSurface {
     // 占い師CO人数
     private int numSeerCo = 0;
     // 占い結果（発言した占い結果）
-    Map<Agent, Species> divinedMap = new HashMap<>();
+    private Map<Agent, Species> divinedMap = new HashMap<>();
     // 占い結果（本当の占い結果）
-    Map<Agent, Species> trueDivinedMap = new HashMap<>();
+    private Map<Agent, Species> trueDivinedMap = new HashMap<>();
     // PP
     private boolean PP = false;
 
@@ -66,7 +66,7 @@ public class BoardSurface {
 
     /**
      * update()で呼び出される関数
-     * @param gameInfo
+     * @param gameInfo ゲーム情報
      */
     public void update(GameInfo gameInfo) {
         this.gameInfo = gameInfo;
@@ -169,8 +169,9 @@ public class BoardSurface {
 
     /**
      * 最大投票数を受けたAgentを返す
-     * @return
+     * @return 最大投票数を受けたAgent（同数の場合はどちらか一方）
      */
+    // TODO 同数の場合にどうするか
     public Agent maxVotedAgent() {
         Map<Agent, Integer> votedMap = getVotedAgentMap();
 
@@ -203,18 +204,10 @@ public class BoardSurface {
         Map<Agent, Integer> votedMap = new HashMap<>();
         for (Agent votedAgent :
                 votedAgentList) {
-            votedMap.merge(votedAgent, 1, (key, value) -> votedMap.get(key) + 1);
+            int count = votedMap.getOrDefault(votedAgent, 0);
+            votedMap.put(votedAgent, count+1);
         }
         return votedMap;
-    }
-
-    /**
-     * Agentが発言した占い結果を返す
-     * @param seer 占い結果を発言したエージェント
-     * @return Agentが発言した占い結果（nullあり)
-     */
-    public Map<Agent, Species> getDivinedMap(Agent seer) {
-        return playerInfoMap.get(seer).getDivinedMap();
     }
 
     /**
@@ -234,8 +227,8 @@ public class BoardSurface {
 
     /**
      * submitが最後に発言した投票先エージェントを取得
-     * @param submit
-     * @return
+     * @param submit 発言者
+     * @return 最後に発言した投票先エージェント
      */
     public Agent submitVoteAndTarget(Agent submit) {
         List<Agent> voteList = playerInfoMap.get(submit).getVoteList();

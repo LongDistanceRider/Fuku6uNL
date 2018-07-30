@@ -60,7 +60,7 @@ class NLP {
      *
      * @param talk talk
      */
-    NLP(Talk talk) {
+    NLP(List<Agent> agentList, Talk talk) {
         // NLTextインスタンス生成をし，一文に分解，不要な文の削除，タグ変換した文に分解する
         NLText nlText = new NLText(talk.getText());
         // タグ変換後の文字列を取得
@@ -153,7 +153,7 @@ class NLP {
                         Log.debug("NlTopic: " + value[i]);
                         // <TARGET>照合
                         target = getTargetString(nlText, Integer.parseInt(value[i + 1]));
-                        targetAgent = Listen.convertStrToAgent(target);
+                        targetAgent = convertStrToAgent(agentList, target);
                         if (target != null) {
                             nlpTextList.add(new ContentNL("REQUEST_VOTE", targetAgent));
                             protocolTextList.add("VOTE" + target);
@@ -177,7 +177,7 @@ class NLP {
                         Log.debug("NlTopic: " + value[i]);
                         // <TARGET>照合
                         target = getTargetString(nlText, Integer.parseInt(value[i + 1]));
-                        targetAgent = Listen.convertStrToAgent(target);
+                        targetAgent = convertStrToAgent(agentList, target);
                         if (target != null) {
                             nlpTextList.add(new ContentNL("LIAR", targetAgent));
 //                            // 自分に嘘つき発言をしているか
@@ -193,7 +193,7 @@ class NLP {
                         Log.debug("NlTopic: " + value[i]);
                         // <TARGET>照合
                         target = getTargetString(nlText, Integer.parseInt(value[i + 1]));
-                        targetAgent = Listen.convertStrToAgent(target);
+                        targetAgent = convertStrToAgent(agentList, target);
                         if (target != null) {
                             nlpTextList.add(new ContentNL("SUSPICIOUS", targetAgent));
 //                            // 自分に疑い発言をしているか
@@ -209,7 +209,7 @@ class NLP {
                         Log.debug("NlTopic: " + value[i]);
                         // <TARGET>照合
                         target = getTargetString(nlText, Integer.parseInt(value[i + 1]));
-                        targetAgent = Listen.convertStrToAgent(target);
+                        targetAgent = convertStrToAgent(agentList, target);
                         if (target != null) {
                             nlpTextList.add(new ContentNL("TRUST", targetAgent));
 //                            // 自分に疑い発言をしているか
@@ -312,5 +312,16 @@ class NLP {
             Log.trace("DIVINED変換中に<TARGET>タグが見つからず，解析終了．");
         }
         return targetString;
+    }
+
+    private Agent convertStrToAgent(List<Agent> agentList, String string) {
+        for (Agent agent :
+                agentList) {
+            if (agent.toString().equals(string)) {
+                return agent;
+            }
+        }
+        Log.error("stringからAgentへの変換に失敗しました．");
+        return null;
     }
 }

@@ -23,7 +23,7 @@ public class Listen {
     // トークリストをどこまで読み込んだか
     private int talkListHead = 0;
     // BoardSurface
-    private static BoardSurface boardSurface;
+    private BoardSurface boardSurface;
 
     public void update(BoardSurface boardSurface) {
         this.boardSurface = boardSurface;
@@ -43,7 +43,7 @@ public class Listen {
             }
 
             // 自然言語処理を行う
-            NLP nlp = new NLP(talk);
+            NLP nlp = new NLP(boardSurface.getGameInfo().getAgentList(), talk);
 
             // プロトコル文処理
             List<String> protocolTextList = nlp.getProtocolTextList();
@@ -155,15 +155,5 @@ public class Listen {
         }
     }
 
-    static Agent convertStrToAgent(String string) {
-        List<Agent> agentList = boardSurface.getGameInfo().getAgentList();
-        for (Agent agent :
-                agentList) {
-            if (agent.toString().equals(string)) {
-                return agent;
-            }
-        }
-        Log.error("stringからAgentへの変換に失敗しました．");
-        return null;
-    }
+
 }

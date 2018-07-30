@@ -232,4 +232,5 @@ public class Fuku6uNL implements Player {
     public String whisper() {
         return null;
     }
+
 }
