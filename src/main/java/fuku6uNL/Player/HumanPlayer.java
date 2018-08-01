@@ -43,7 +43,7 @@ public class HumanPlayer implements Player {
         String talk_String = null;
         BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
         try {
-            System.out.print("TALK: ");
+            System.out.print(gameInfo.getAgent() + "[" + gameInfo.getRole() + "] TALK: ");
             talk_String = reader.readLine();
 //            reader.close();
         } catch (IOException e) {

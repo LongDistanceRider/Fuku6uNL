@@ -13,7 +13,6 @@ import java.util.List;
 
 public class Possessed extends AbstractRole {
 
-
     @Override
     public void dayStart(BoardSurface boardSurface) {
         forceVoteTarget = null;
@@ -56,6 +55,11 @@ public class Possessed extends AbstractRole {
             return forceVoteTarget;
         }
         return null;
+    }
+
+    @Override
+    public void talk(int turn, BoardSurface boardSurface) {
+
     }
 
     @Override

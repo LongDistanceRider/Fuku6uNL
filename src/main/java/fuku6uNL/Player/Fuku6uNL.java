@@ -50,6 +50,7 @@ public class Fuku6uNL implements Player {
             case 1:
                 // 役職セット
                 Role role = boardSurface.getGameInfo().getRole();
+                Log.info("自分の役職: " + role);
                 switch (role) {
                     case VILLAGER:
                         assignRole = new Villager();
@@ -64,7 +65,6 @@ public class Fuku6uNL implements Player {
                         assignRole = new Werewolf();
                         break;
                 }
-                break;
             default:
                 // 役職ごとの処理
                 assignRole.dayStart(boardSurface);
@@ -76,8 +76,11 @@ public class Fuku6uNL implements Player {
     public String talk() {
         Log.trace("talk()");
         // ターン数取得
+        int turn = 0;
         List<Talk> talkList = boardSurface.getGameInfo().getTalkList();
-        int turn = talkList.get(talkList.size()).getTurn();
+        if (!talkList.isEmpty()) {
+            turn = talkList.get(talkList.size()-1).getTurn();
+        }
         // ターン数3の時に状況確認と雑談発言
         if (turn == 3) {
             // 占い師COがn人の場合
@@ -110,7 +113,11 @@ public class Fuku6uNL implements Player {
                     if (!utteranceString.toString().equals("")) {
                         utteranceString.append("を、");
                     }
-                    utteranceString.append(seer).append("は").append(divinedMapEntry.getKey()).append("に").append(Utterance.convertSpeciesToWhiteBlack(divinedMapEntry.getValue()));
+                    String target = divinedMapEntry.getKey().toString();
+                    if (target.equals(boardSurface.getGameInfo().getAgent().toString())) {
+                        target = "ボク";
+                    }
+                    utteranceString.append(seer).append("は").append(target).append("に").append(Utterance.convertSpeciesToWhiteBlack(divinedMapEntry.getValue()));
                 } else {
                     Utterance.getInstance().offer(seer +"って占い結果話したっけ？");
                 }
@@ -142,6 +149,14 @@ public class Fuku6uNL implements Player {
             if (maxVoteTarget != null) {
                 Utterance.getInstance().offer("最多投票先は、" + maxVoteTarget + "だね。");
             }
+            // 役職固有の処理
+            assignRole.talk(turn, boardSurface);
+
+            // 黒出されたAgentに投票発言をする？占い師で白出ししてる時，狂人で白出ししている時，人狼で白出ししてる時
+
+            // 占い師１黒出し１は投票
+            // 占い師２黒出し１は投票，２はどちらかに投票
+            // 占い師３黒出し１は黒出した占い師を投票黒出し２はどちらかの占い師に投票，３は占い師に投票
 
         }
         return Utterance.getInstance().poll();

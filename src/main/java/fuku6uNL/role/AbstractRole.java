@@ -16,6 +16,7 @@ public abstract class AbstractRole {
     protected Agent forceVoteTarget;
     public abstract void dayStart(BoardSurface boardSurface);
     public abstract Agent vote(BoardSurface boardSurface);
+    public abstract void talk(int turn, BoardSurface boardSurface);
     public abstract void finish();
 
     /**

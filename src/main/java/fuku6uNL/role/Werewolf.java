@@ -43,6 +43,11 @@ public class Werewolf extends AbstractRole {
     }
 
     @Override
+    public void talk(int turn, BoardSurface boardSurface) {
+
+    }
+
+    @Override
     public void finish() {
 
     }

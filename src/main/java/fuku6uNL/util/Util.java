@@ -23,7 +23,7 @@ public class Util {
      * @return trueまたはfalseを返す
      */
     public static boolean cheatingCoin(double probability) {
-        if (0 > probability || probability < 1) {
+        if (0 > probability || probability > 1) {
             Log.warn("不正な引数が渡されたため，probabilityを0.5に変換しました");
             probability = 0.5;
         }

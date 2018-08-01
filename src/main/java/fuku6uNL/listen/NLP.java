@@ -85,7 +85,7 @@ class NLP {
                 validEntry.put(maxComparisonEntry.getKey(), maxComparisonEntry.getValue());
             } else {
                 if (maxComparisonEntry != null) {
-                    Log.debug("ユークリッド距離不足．tagString: " + tagString + "最大ユークリッド距離獲得照合ファイル文:" + maxComparisonEntry.getKey() + " 距離: " + maxDistance);
+                    Log.debug("ユークリッド距離不足．tagString: " + tagString + " 最大ユークリッド距離獲得照合ファイル文:" + maxComparisonEntry.getKey() + " 距離: " + maxDistance);
                 } else {
                     Log.error("最大ユークリッド距離獲得ができませんでした．");
                 }
@@ -156,7 +156,7 @@ class NLP {
                         targetAgent = convertStrToAgent(agentList, target);
                         if (target != null) {
                             nlpTextList.add(new ContentNL("REQUEST_VOTE", targetAgent));
-                            protocolTextList.add("VOTE" + target);
+                            protocolTextList.add("VOTE " + target);
 //                            // 自分に投票発言をしているか
 //                            Agent ageTarget = convertStringToAgent(target);
 //                            if (boardSurface.getMe().toString().equals(target)) {

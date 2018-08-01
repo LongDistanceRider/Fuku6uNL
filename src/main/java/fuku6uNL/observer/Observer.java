@@ -41,12 +41,10 @@ public class Observer {
         List<Agent> seerCoAgentList = boardSurface.getCoAgentList(Role.SEER);
         // 占い師COしている人数を更新
         Role coRole = boardSurface.getCoRole();
-        if (coRole != null) {
-            if (coRole.equals(Role.SEER)) {
-                boardSurface.setNumSeerCo(seerCoAgentList.size() + 1);
-            } else {
-                boardSurface.setNumSeerCo(seerCoAgentList.size());
-            }
+        if (coRole != null && coRole.equals(Role.SEER)) {
+            boardSurface.setNumSeerCo(seerCoAgentList.size() + 1);
+        } else {
+            boardSurface.setNumSeerCo(seerCoAgentList.size());
         }
 
         // 2人の場合

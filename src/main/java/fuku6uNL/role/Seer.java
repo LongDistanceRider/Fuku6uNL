@@ -10,6 +10,7 @@ import org.aiwolf.common.data.Role;
 import org.aiwolf.common.data.Species;
 import org.aiwolf.common.net.GameInfo;
 import java.util.List;
+import java.util.Map;
 
 public class Seer extends AbstractRole {
 
@@ -55,6 +56,25 @@ public class Seer extends AbstractRole {
             return forceVoteTarget;
         }
         return null;
+    }
+
+    @Override
+    public void talk(int turn, BoardSurface boardSurface) {
+        if (turn == 5) {
+//            // 黒を出しているエージェントに対して発言
+//            Map.Entry<Agent, Species> latestDivinedMap = boardSurface.getLatestDivinedMap();
+//            if (latestDivinedMap != null && latestDivinedMap.getValue().equals(Species.WEREWOLF)) {
+//                Utterance.getInstance().offer("人狼の" + latestDivinedMap.getKey() + "に投票すれば村は平和になるよ！みんな" + latestDivinedMap.getKey() + "に投票しよう！");
+//            } else {
+//                // 黒を出されているエージェントに対して発言
+//                List<Agent> divinedBlackAgentList = boardSurface.getPlayerDivinedAgentList(Species.WEREWOLF);
+//                divinedBlackAgentList.forEach(agent -> {
+//                    Utterance.getInstance().offer(agent + "が黒かどうかは怪しいね。");
+//                });
+//
+//            }
+        }
+
     }
 
     @Override

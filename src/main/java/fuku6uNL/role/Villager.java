@@ -15,6 +15,11 @@ public class Villager extends AbstractRole {
     }
 
     @Override
+    public void talk(int turn, BoardSurface boardSurface) {
+
+    }
+
+    @Override
     public void finish() {
 
     }
