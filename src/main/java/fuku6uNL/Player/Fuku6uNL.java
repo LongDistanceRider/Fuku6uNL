@@ -3,6 +3,7 @@ package fuku6uNL.Player;
 import fuku6uNL.board.BoardSurface;
 import fuku6uNL.listen.Listen;
 import fuku6uNL.log.Log;
+import fuku6uNL.log.LogWriter;
 import fuku6uNL.role.*;
 import fuku6uNL.util.Util;
 import fuku6uNL.utterance.Utterance;
@@ -229,6 +230,7 @@ public class Fuku6uNL implements Player {
             }
         }
         Log.endLog();
+        LogWriter.finish();
     }
 
     @Override

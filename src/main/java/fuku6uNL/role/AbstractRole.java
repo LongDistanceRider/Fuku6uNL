@@ -17,6 +17,7 @@ public abstract class AbstractRole {
     public abstract void dayStart(BoardSurface boardSurface);
     public abstract Agent vote(BoardSurface boardSurface);
     public abstract void talk(int turn, BoardSurface boardSurface);
+    // TODO 削除予定
     public abstract void finish();
 
     /**

@@ -48,12 +48,13 @@ public class Observer {
         }
 
         // 2人の場合
-        if (seerCoAgentList.size() == 2) {
+        int seerNum = boardSurface.getNumSeerCo();
+        if (seerNum == 2) {
             Utterance.getInstance().offer("占い師COしている人が2人いるね。1人は狂人かな？");
         }
 
         // 3人の場合
-        if (seerCoAgentList.size() == 3) {
+        if (seerNum == 3) {
             Utterance.getInstance().offer("3人も占い師CO！？ボクの考えだと占い師の中に人狼がいるね。");
         }
     }

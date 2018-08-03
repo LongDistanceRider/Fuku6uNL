@@ -1,6 +1,7 @@
 package fuku6uNL.listen;
 
 import fuku6uNL.log.Log;
+import fuku6uNL.log.LogWriter;
 import org.aiwolf.common.data.Agent;
 import org.aiwolf.common.data.Role;
 import org.aiwolf.common.data.Species;
@@ -86,6 +87,7 @@ class NLP {
             } else {
                 if (maxComparisonEntry != null) {
                     Log.debug("ユークリッド距離不足．tagString: " + tagString + " 最大ユークリッド距離獲得照合ファイル文:" + maxComparisonEntry.getKey() + " 距離: " + maxDistance);
+                    LogWriter.addWriteList(tagString + "," + maxComparisonEntry.getKey() + "," + maxDistance);
                 } else {
                     Log.error("最大ユークリッド距離獲得ができませんでした．");
                 }

@@ -255,7 +255,7 @@ public class BoardSurface {
     public Agent submitVoteAndTarget(Agent submit) {
         List<Agent> voteList = playerInfoMap.get(submit).getVoteList();
         if (!voteList.isEmpty()) {
-            return voteList.get(voteList.size());
+            return voteList.get(voteList.size()-1);
         }
         return null;
     }
