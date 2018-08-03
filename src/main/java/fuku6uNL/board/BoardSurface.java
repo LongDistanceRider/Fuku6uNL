@@ -219,7 +219,7 @@ public class BoardSurface {
         playerInfoMap.forEach((agent, playerInfo) -> {
             List<Agent> votedAgent = playerInfo.getVoteList();
             if (!votedAgent.isEmpty()) {
-                votedAgentList.add(votedAgent.get(votedAgent.size()));
+                votedAgentList.add(votedAgent.get(votedAgent.size()-1));
             }
         });
 

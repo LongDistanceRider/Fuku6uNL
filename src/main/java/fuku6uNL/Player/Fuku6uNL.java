@@ -75,6 +75,10 @@ public class Fuku6uNL implements Player {
 
     @Override
     public String talk() {
+        // 0日目処理
+        if (boardSurface.getGameInfo().getDay() == 0) {
+            return Utterance.getInstance().poll();
+        }
         Log.trace("talk()");
         // ターン数取得
         int turn = 0;

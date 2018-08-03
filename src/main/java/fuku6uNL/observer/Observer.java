@@ -49,7 +49,7 @@ public class Observer {
 
         // 2人の場合
         int seerNum = boardSurface.getNumSeerCo();
-        if (seerNum == 2) {
+        if (seerNum == 2 && !coRole.equals(Role.SEER)) {
             Utterance.getInstance().offer("占い師COしている人が2人いるね。1人は狂人かな？");
         }
 
