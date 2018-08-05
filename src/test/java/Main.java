@@ -18,5 +18,6 @@ public class Main {
         starter.connectClient("fuku6uNL.Player.HumanPlayer", "HumanPlayer", null);
         starter.connectClient("fuku6uNL.Player.HumanPlayer", "HumanPlayer", null);
         starter.connectClient("fuku6uNL.Player.HumanPlayer", "HumanPlayer", null);
+
     }
 }
