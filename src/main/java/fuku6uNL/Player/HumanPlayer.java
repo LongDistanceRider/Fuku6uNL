@@ -52,6 +52,9 @@ public class HumanPlayer implements Player {
         if (talk_String.equals("s")) {
             talk_String = "Skip";
         }
+        if (talk_String.equals("")) {
+            return "Over";
+        }
         return talk_String;
     }
 

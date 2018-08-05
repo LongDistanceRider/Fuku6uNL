@@ -34,23 +34,26 @@ public class Fuku6uNL implements Player {
     public void update(GameInfo gameInfo) {
         Log.trace("update()");
         this.boardSurface.update(gameInfo);
-        listen.update(boardSurface);
+        if (gameInfo.getDay() != 0) {
+            listen.update(boardSurface);
+        }
     }
 
     @Override
     public void dayStart() {
+        GameInfo gameInfo = boardSurface.getGameInfo();
         Log.trace("dayStart()");
         Log.info("=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=");
-        Log.info("\t" + boardSurface.getGameInfo().getDay() + "day start : My number is " + boardSurface.getGameInfo().getAgent().toString());
+        Log.info("\t" + gameInfo.getDay() + "day start : My number is " + gameInfo.getAgent().toString());
         Log.info("=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=");
 
-        switch (boardSurface.getGameInfo().getDay()) {
+        switch (gameInfo.getDay()) {
             case 0:
                 Utterance.getInstance().offer("こんにちは！これからよろしくね！");
                 break;
             case 1:
                 // 役職セット
-                Role role = boardSurface.getGameInfo().getRole();
+                Role role = gameInfo.getRole();
                 Log.info("自分の役職: " + role);
                 switch (role) {
                     case VILLAGER:
@@ -66,7 +69,30 @@ public class Fuku6uNL implements Player {
                         assignRole = new Werewolf();
                         break;
                 }
+                // 役職ごとの処理
+                assignRole.dayStart(boardSurface);
+                break;
             default:
+                // 発言リセット
+                Utterance.getInstance().clear();
+                // 被投票者
+                Agent executedAgent = gameInfo.getExecutedAgent();
+                Utterance.getInstance().offer(executedAgent + "が追放されたね。");
+                Log.info("追放者: " + executedAgent);
+                // 被害者
+                Agent attackedAgent = null;
+                for (Agent agent :
+                        gameInfo.getLastDeadAgentList()) {  // 狐がいると2人返ってくると思われるため，この処理のままにしておく
+                    if (!agent.equals(executedAgent)) {
+                        attackedAgent = agent;
+                    }
+                }
+                if (attackedAgent != null) {
+                    Utterance.getInstance().offer(attackedAgent + "が襲われてる！");
+                    Log.info("被害者 : " + attackedAgent);
+                } else {
+                    Log.info("被害者 : なし（GJ発生）");
+                }
                 // 役職ごとの処理
                 assignRole.dayStart(boardSurface);
         }
@@ -77,7 +103,12 @@ public class Fuku6uNL implements Player {
     public String talk() {
         // 0日目処理
         if (boardSurface.getGameInfo().getDay() == 0) {
-            return Utterance.getInstance().poll();
+            String string = Utterance.getInstance().poll();
+            if (string != null) {
+                return string;
+            } else {
+                return "Over";
+            }
         }
         Log.trace("talk()");
         // ターン数取得
@@ -87,7 +118,7 @@ public class Fuku6uNL implements Player {
             turn = talkList.get(talkList.size()-1).getTurn();
         }
         // ターン数3の時に状況確認と雑談発言
-        if (turn == 3) {
+        if (turn == 3 && boardSurface.getGameInfo().getDay() == 1) {
             // 占い師COがn人の場合
             int seerNum = boardSurface.getNumSeerCo();
             Utterance.getInstance().offer("今回は" + seerNum +"-0進行だね。");

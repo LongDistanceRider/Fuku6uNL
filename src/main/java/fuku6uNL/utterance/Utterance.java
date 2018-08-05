@@ -19,6 +19,9 @@ public class Utterance {
     /* 発言キュー */
     private ArrayDeque<String> utteranceQueue = new ArrayDeque<>();
 
+    public void clear() {
+        utteranceQueue.clear();
+    }
     /**
      * キューに発言を追加
      * @param utterance
@@ -31,9 +34,9 @@ public class Utterance {
         }
         // 同じ発言を何度もしないように，フラグ管理を施す
         StackTraceElement[] stackTraceElements = (new Throwable()).getStackTrace(); // スタックトレースより呼び出し元情報の取り出し
-        String className = stackTraceElements[2].getClassName();    // クラス名取得
-        String methodName = stackTraceElements[2].getMethodName();  // メソッド名取得
-        int line = stackTraceElements[2].getLineNumber();   // 呼び出し元行数取得
+        String className = stackTraceElements[1].getClassName();    // クラス名取得
+        String methodName = stackTraceElements[1].getMethodName();  // メソッド名取得
+        int line = stackTraceElements[1].getLineNumber();   // 呼び出し元行数取得
         String flagString = className + methodName + line + utterance;  // フラグ名作成
         Log.trace("flagString" + flagString);
 
@@ -64,7 +67,7 @@ public class Utterance {
 
     /**
      * Speciesを自然言語に変換
-     * @param species
+     * @param species　
      * @return
      */
     public static String convertSpeciesToNl (Species species) {

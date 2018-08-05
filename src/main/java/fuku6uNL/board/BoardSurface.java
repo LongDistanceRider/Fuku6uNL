@@ -131,6 +131,10 @@ public class BoardSurface {
         return divinedAgentList;
     }
 
+    /**
+     * 最後の（自分が出した）占い結果を取得する
+     * @return 最後の占い結果
+     */
     public Map.Entry<Agent, Species> getLatestDivinedMap(){
         Map.Entry<Agent, Species> latestDivinedMap = null;
         for (Map.Entry<Agent, Species> divinedMapEntry:
