@@ -70,7 +70,7 @@ public class Listen {
             switch (content.getTopic()) {
                     /* --- 意図表明に関する文 --- */
                 case COMINGOUT:
-                    boardSurface.playerCoRole(submit, content.getRole()); // CO役職を保管
+                    boardSurface.setPlayerCoRole(submit, content.getRole()); // CO役職を保管
                     // 対抗COのチェック
                     Observer.opposeCo(boardSurface.getCoRole(), submit, content.getRole());
                     // 占い師の人数をチェック
@@ -86,7 +86,7 @@ public class Listen {
                     break;
                     /* --- 能力結果に関する文 --- */
                 case DIVINED:
-                    boardSurface.playerDivMap(submit, content.getTarget(), content.getResult()); // 占い結果を保管
+                    boardSurface.setPlayerDivMap(submit, content.getTarget(), content.getResult()); // 占い結果を保管
                     // 対象が自分かチェック
                     Observer.divinedTargetMe(boardSurface.getGameInfo().getAgent(), submit, content.getTarget(), content.getResult());
                     break;
@@ -100,7 +100,7 @@ public class Listen {
 //                case GUARD:
 //                    break;
                 case VOTE:
-                    boardSurface.playerVote(submit, content.getTarget()); // 投票先発言を保管
+                    boardSurface.setPlayerVote(submit, content.getTarget()); // 投票先発言を保管
                     // 対象が自分かチェック
                     Observer.voteTargetMe(boardSurface.getGameInfo().getAgent(), submit, content.getTarget());
                     // 対象が黒出ししたエージェントかチェック

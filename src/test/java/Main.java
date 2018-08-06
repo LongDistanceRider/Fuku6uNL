@@ -1,3 +1,4 @@
+import org.aiwolf.common.data.Role;
 
 public class Main {
     private final static String HOST = "localhost"; // ホスト名 (kanolab 49.212.130.102)
@@ -9,7 +10,7 @@ public class Main {
         Starter starter = new Starter(HOST, PORT, NUMBER_OF_GAME, NUMBER_OF_PLAYER);  // ゲームスタートのインスタンス作成
         starter.serverStart();  // ローカルサーバの立ち上げ
         Thread.sleep(1000); // ここで1秒待たないと，サーバ立ち上がる前にクライアント接続してしまう
-        starter.connectClient("fuku6uNL.Player.Fuku6uNL", "Fuku6u", null);
+        starter.connectClient("fuku6uNL.Player.Fuku6uNL", "Fuku6u", Role.VILLAGER);
 //        starter.connectClient("fuku6uNL.Player.Dammy", "Dammy", null);
 //        starter.connectClient("fuku6uNL.Player.Dammy", "Dammy", null);
 //        starter.connectClient("fuku6uNL.Player.Dammy", "Dammy", null);

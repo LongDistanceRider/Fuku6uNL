@@ -52,7 +52,11 @@ public class Utterance {
      * @return キューが空の場合はnull
      */
     public String poll() {
-        return utteranceQueue.poll();
+        // キューにある発言を繋げて一気に返す
+        StringBuilder stringBuilder = new StringBuilder();
+        utteranceQueue.forEach(stringBuilder::append);
+        utteranceQueue.clear();
+        return stringBuilder.toString();
     }
 
     /* *** initialize-on-demand holder *** */

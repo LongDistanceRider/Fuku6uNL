@@ -1,5 +1,6 @@
 package fuku6uNL.board;
 
+import org.aiwolf.client.lib.Topic;
 import org.aiwolf.common.data.Agent;
 import org.aiwolf.common.data.Role;
 import org.aiwolf.common.data.Species;
@@ -69,35 +70,117 @@ public class BoardSurface {
         this.gameInfo = gameInfo;
     }
 
+    /* === === === === === === === === === === === === === === === === === === === === === */
+    /*  agentが受けている印象 */
+    /* === === === === === === === === === === === === === === === === === === === === === */
+    /* === === === === === === === === === === === === === === === === === === === === === */
+    /*  agentの発言 */
+    /* === === === === === === === === === === === === === === === === === === === === === */
+    // getter
     /**
-     * submitが発言したCO役職を保管
+     * エージェントが発言したCO役職を返す
+     * @param submit
+     * @return
+     */
+    public Role getPlayerCoRole(Agent submit) {
+        return playerInfoMap.get(submit).getCoRole();
+    }
+
+    /**
+     * エージェントが発言した占い結果を返す
+     * @param submit
+     * @return
+     */
+    public Map<Agent, Species> getPlayerDivMap(Agent submit) {
+        return playerInfoMap.get(submit).getDivinedMap();
+    }
+
+    /**
+     * エージェントが発言した投票先を返す
+     * @param submit
+     * @return
+     */
+    public List<Agent> getPlayerVote(Agent submit) {
+        return playerInfoMap.get(submit).getVoteList();
+    }
+    // setter
+    /**
+     * エージェントが発言したCO役職を保管
      *
      * @param submit 発言者
      * @param coRole 発言したCO役職
      */
-    public void playerCoRole(Agent submit, Role coRole) {
+    public void setPlayerCoRole(Agent submit, Role coRole) {
         playerInfoMap.get(submit).addCoRole(coRole);
     }
 
     /**
-     * submitが発言した占い結果を保管
+     * エージェントが発言した占い結果を保管
      * @param submit 発言者
      * @param target 占い先
      * @param result 占い結果
      */
-    public void playerDivMap(Agent submit, Agent target, Species result) {
+    public void setPlayerDivMap(Agent submit, Agent target, Species result) {
         playerInfoMap.get(submit).putDivined(target, result);
     }
 
     /**
-     * submitが発言した投票発言を保管
+     * エージェントが発言した投票発言を保管
      * @param submit 発言者
      * @param target 投票発言先
      */
-    public void playerVote(Agent submit, Agent target) {
+    public void setPlayerVote(Agent submit, Agent target) {
         playerInfoMap.get(submit).addVote(target);
     }
 
+    /* === === === === === === === === === === === === === === === === === === === === === */
+    /*  meの発言 */
+    /* === === === === === === === === === === === === === === === === === === === === === */
+    /* === === === === === === === === === === === === === === === === === === === === === */
+    /*  状況 */
+    /* === === === === === === === === === === === === === === === === === === === === === */
+
+    /* === === === === === === === === === === === === === === === === === === === === === */
+    /*  追放者・被害者情報 */
+    /* === === === === === === === === === === === === === === === === === === === === === */
+
+    /* === === === === === === === === === === === === === === === === === === === === === */
+    /* 推論後のagentに対する情報 */
+    /* === === === === === === === === === === === === === === === === === === === === === */
+
+    /* === === === === === === === === === === === === === === === === === === === === === */
+    /* その他 */
+    /* === === === === === === === === === === === === === === === === === === === === === */
+
+    /**
+     * 呼び出された時点での真占い師を返す（自分の役職が占い師以外を想定）
+     * @return
+     */
+    public Agent trueSeerAgent() {
+        List<Agent> seerCoAgentList = getCoAgentList(Role.SEER);
+        switch (numSeerCo) {
+            case 1:
+                if (seerCoAgentList.size() == 1) {
+                    return seerCoAgentList.get(0);
+                }
+            case 2:
+                // 自分に黒出ししたエージェントはいるか
+                for (Agent seerCoAgent :
+                        seerCoAgentList) {
+                    Map<Agent, Species> divined = getPlayerDivMap(seerCoAgent);
+                    divined.forEach((target, result) -> {
+                        if (target.equals(getGameInfo().getAgent()) && result.equals(Species.WEREWOLF)) {
+                            seerCoAgentList.remove(seerCoAgent);
+                        }
+                    });
+                }
+                if (seerCoAgentList.size() == 1) {
+                    return seerCoAgentList.get(0);
+                }
+                break;
+        }
+        return null;
+    }
     /**
      * ある役職をCOしたエージェントのリストを返す
      * @param role COした役職
