@@ -131,18 +131,18 @@ public class BoardSurface {
         return divinedAgentList;
     }
 
-    /**
-     * 最後の（自分が出した）占い結果を取得する
-     * @return 最後の占い結果
-     */
-    public Map.Entry<Agent, Species> getLatestDivinedMap(){
-        Map.Entry<Agent, Species> latestDivinedMap = null;
-        for (Map.Entry<Agent, Species> divinedMapEntry:
-                divinedMap.entrySet()) {
-            latestDivinedMap = divinedMapEntry;
-        }
-        return latestDivinedMap;
-    }
+//    /**
+//     * 最後の（自分が出した）占い結果を取得する
+//     * @return 最後の占い結果
+//     */
+//    public Map.Entry<Agent, Species> getLatestDivinedMap(){
+//        Map.Entry<Agent, Species> latestDivinedMap = null;
+//        for (Map.Entry<Agent, Species> divinedMapEntry:
+//                divinedMap.entrySet()) {
+//            latestDivinedMap = divinedMapEntry;
+//        }
+//        return latestDivinedMap;
+//    }
 
     /**
      * speciesで指定された占い判定を受けたエージェントのリストを返す（自分の（本当の）占い結果のみ）
@@ -159,22 +159,22 @@ public class BoardSurface {
         return trueDivinedAgentList;
     }
 
-    /**
-     * speciesで指定された占い判定を受けたエージェントのリストを返す（他プレイヤからの占い結果のみ）
-     * @param species HUMAN or WEREWOLF
-     * @return 占い判定を受けたエージェントのリスト
-     */
-    public List<Agent> getPlayerDivinedAgentList(Species species) {
-        List<Agent> agentList = new ArrayList<>();
-        List<Agent> seerCoAgentList = getCoAgentList(Role.SEER);
-        seerCoAgentList.forEach(agent -> {
-            Map.Entry<Agent, Species> divinedMap = getLatestDivinedMap(agent);
-            if (divinedMap.getValue().equals(species)) {
-                agentList.add(divinedMap.getKey());
-            }
-        });
-        return agentList;
-    }
+//    /**
+//     * speciesで指定された占い判定を受けたエージェントのリストを返す（他プレイヤからの占い結果のみ）
+//     * @param species HUMAN or WEREWOLF
+//     * @return 占い判定を受けたエージェントのリスト
+//     */
+//    public List<Agent> getPlayerDivinedAgentList(Species species) {
+//        List<Agent> agentList = new ArrayList<>();
+//        List<Agent> seerCoAgentList = getCoAgentList(Role.SEER);
+//        seerCoAgentList.forEach(agent -> {
+//            Map.Entry<Agent, Species> divinedMap = getLatestDivinedMap(agent);
+//            if (divinedMap.getValue().equals(species)) {
+//                agentList.add(divinedMap.getKey());
+//            }
+//        });
+//        return agentList;
+//    }
     /**
      * 占い結果（発言した）を保管
      * @param target 占い先

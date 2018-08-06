@@ -64,65 +64,51 @@ class NLText {
         return targetList;
     }
 
-    NLText(String text) {
-        // 1文に分解する
-        String[] oneSentences = text.split("[!.。！]");
-        // 1文ずつ処理をする
-        for (String oneSentence : oneSentences) {
-            String sentence = oneSentence;
-            // フィルタにかける「わーい」とか「頑張るぞー」とかは解析不要のため，コンティニュー
-
-            if (sentence.equals("") || isChat(sentence)) {
-                // 解析する必要のない発話を除外（中身のない発言，Over・Skip発言，雑談
-                Log.trace("NL解析不要: " + sentence);
-                continue;
+    NLText(String oneSentence) {
+        // 句点までの内容にフィルターが引っかからない場合は句点までの文を削除する．
+        String[] textArray = oneSentence.split("、");
+        for (int j = 0; j < textArray.length; j++) {
+            if (isChat(textArray[j])) {
+                textArray[j] = "";
             }
-
-            // 句点までの内容にフィルターが引っかからない場合は句点までの文を削除する．
-            String[] textArray = sentence.split("、");
-            for (int j = 0; j < textArray.length; j++) {
-                if (isChat(textArray[j])) {
-                    textArray[j] = "";
-                }
-            }
-
-            sentence = String.join("", textArray);
-
-            // 文をタグ変換（<TARGET>を除く）
-            String convertToTag = sentence;
-            for (Map.Entry<String, String[]> tagEntry :
-                    tagMap.entrySet()) {
-                int index;
-                String tmpText = sentence;  // 削除されながら走査される文字列
-                while (true) {
-                    index = tmpText.indexOf(tagEntry.getKey());
-                    if (index != -1) {
-                        addTagEntryList(tagEntry, sentence, index);  // 変換を保存
-                        tmpText = tmpText.substring(index + tagEntry.getKey().length());    // 変換したとこまでの文字列を削除して再走査
-                    } else {
-                        break;
-                    }
-                }
-                convertToTag = convertToTag.replaceAll(tagEntry.getKey(), tagEntry.getValue()[0]); // タグ文字に変換
-            }
-            // タグ変換<TARGET>をする
-            // -- "Agent["を走査してその後の"]"までを保存する 「Agent[01]は人狼」から「Agent[01]」を取り出す
-            String tmpText = convertToTag;   // 削除されながら走査される文字列
-            while (true) {
-                int index = tmpText.indexOf("Agent[");
-                if (index != -1) {
-                    int endIndex = tmpText.indexOf("]");
-                    addTargetList((String) tmpText.subSequence(index, endIndex + 1));
-                    tmpText = tmpText.substring(endIndex + 1);
-                } else {
-                    break;
-                }
-            }
-            Pattern pattern = Pattern.compile("Agent\\[[0-9]{2}]");
-            Matcher matcher = pattern.matcher(convertToTag);
-            tagStringList.add(matcher.replaceAll("<TARGET>"));  // タグ文字に変換
         }
 
+        // タグ変換する文をセット
+        String sentence = String.join("", textArray);
+
+        // 文をタグ変換（<TARGET>を除く）
+        String convertToTag = sentence;
+        for (Map.Entry<String, String[]> tagEntry :
+                tagMap.entrySet()) {
+            int index;  // タグ設定されている単語を発見したStringの要素番号
+            String tmpSentence = sentence;  // 削除されながら走査される文字列
+            while (true) {
+                index = tmpSentence.indexOf(tagEntry.getKey()); // タグ文字を走査
+                if (index != -1) {
+                    addTagEntryList(tagEntry, sentence, index);  // 変換を保存
+                    tmpSentence = tmpSentence.substring(index + tagEntry.getKey().length());    // 変換したタグ文字を削除して再走査
+                } else {
+                    break;  // 見つからなければループを抜ける
+                }
+            }
+            convertToTag = convertToTag.replaceAll(tagEntry.getKey(), tagEntry.getValue()[0]); // タグ文字に変換
+        }
+        // タグ変換<TARGET>をする
+        // -- "Agent["を走査してその後の"]"までを保存する 「Agent[01]は人狼」から「Agent[01]」を取り出す
+        String tmpText = convertToTag;   // 削除されながら走査される文字列
+        while (true) {
+            int index = tmpText.indexOf("Agent[");
+            if (index != -1) {
+                int endIndex = tmpText.indexOf("]");
+                addTargetList((String) tmpText.subSequence(index, endIndex + 1));
+                tmpText = tmpText.substring(endIndex + 1);
+            } else {
+                break;
+            }
+        }
+        Pattern pattern = Pattern.compile("Agent\\[[0-9]{2}]");
+        Matcher matcher = pattern.matcher(convertToTag);
+        tagStringList.add(matcher.replaceAll("<TARGET>"));  // タグ文字に変換
     }
 
     /**
@@ -160,7 +146,7 @@ class NLText {
         }
         this.tagEntryList.addLast(tagEntry);
     }
-    private static boolean isChat(String text) {
+    static boolean isChat(String text) {
         for (String filter : filterList) {
             if (text.contains(filter)) {
                 return false;

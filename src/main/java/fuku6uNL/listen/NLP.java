@@ -13,6 +13,8 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.*;
 
+import static fuku6uNL.listen.NLText.isChat;
+
 class NLP {
 
     // PATH
@@ -62,104 +64,113 @@ class NLP {
      * @param talk talk
      */
     NLP(List<Agent> agentList, Talk talk) {
-        // NLTextインスタンス生成をし，一文に分解，不要な文の削除，タグ変換した文に分解する
-        NLText nlText = new NLText(talk.getText());
-        // タグ変換後の文字列を取得
-        List<String> tagStringList = nlText.getTagStringList();
-        // ユークリッド距離を測る
-        Map<String, String[]> validEntry = new HashMap<>();
-        tagStringList.forEach(tagString -> {
-            double maxDistance = 0; // 最大ユークリッド距離（一番近い距離が1，遠い距離が0のdouble型
-            Map.Entry<String, String[]> maxComparisonEntry = null;
-            for (Map.Entry<String, String[]> comparisonEntry :
-                    comparisonMap.entrySet()) {
-                LevensteinDistance levensteinDistance = new LevensteinDistance();
-                double distance = levensteinDistance.getDistance(comparisonEntry.getKey(), tagString);
-                if (distance > maxDistance) {
-                    maxDistance = distance;
-                    maxComparisonEntry = comparisonEntry;
-                }
+        // 1文に分解後，フィルタリングを施し，NLTextインスタンスを生成する．
+        String[] oneSentences = talk.getText().split("[!.。！]");
+        for (String oneSentence : oneSentences) {
+            // フィルタリング
+            if (oneSentence.equals("") || isChat(oneSentence)) {
+                // 解析する必要のない発話を除外（中身のない発言，雑談）
+                Log.trace("NL解析不要: " + oneSentence);
+                continue;
             }
-            // 距離がDISTANCE_THRESHOLD以下は変換不可能とする
-            if (maxDistance > DISTANCE_THRESHOLD) {
-                Log.trace("最大ユークリッド距離獲得照合ファイル文: " + maxComparisonEntry.getKey() + " 距離: " + maxDistance);
-                validEntry.put(maxComparisonEntry.getKey(), maxComparisonEntry.getValue());
-                LogWriter.addNlList(tagString + "," + maxComparisonEntry.getKey() + "," + maxDistance);
-            } else {
-                if (maxComparisonEntry != null) {
-                    Log.debug("ユークリッド距離不足．tagString: " + tagString + " 最大ユークリッド距離獲得照合ファイル文:" + maxComparisonEntry.getKey() + " 距離: " + maxDistance);
+            // NLTextインスタンス生成
+            NLText nlText = new NLText(oneSentence);
+            // タグ変換後の文字列を取得
+            List<String> tagStringList = nlText.getTagStringList();
+            // ユークリッド距離を測る
+            Map<String, String[]> validEntry = new HashMap<>();
+            tagStringList.forEach(tagString -> {
+                double maxDistance = 0; // 最大ユークリッド距離（一番近い距離が1，遠い距離が0のdouble型
+                Map.Entry<String, String[]> maxComparisonEntry = null;
+                for (Map.Entry<String, String[]> comparisonEntry :
+                        comparisonMap.entrySet()) {
+                    LevensteinDistance levensteinDistance = new LevensteinDistance();
+                    double distance = levensteinDistance.getDistance(comparisonEntry.getKey(), tagString);
+                    if (distance > maxDistance) {
+                        maxDistance = distance;
+                        maxComparisonEntry = comparisonEntry;
+                    }
+                }
+                // 距離がDISTANCE_THRESHOLD以下は変換不可能とする
+                if (maxDistance > DISTANCE_THRESHOLD) {
+                    Log.trace("最大ユークリッド距離獲得照合ファイル文: " + maxComparisonEntry.getKey() + " 距離: " + maxDistance);
+                    validEntry.put(maxComparisonEntry.getKey(), maxComparisonEntry.getValue());
                     LogWriter.addNlList(tagString + "," + maxComparisonEntry.getKey() + "," + maxDistance);
                 } else {
-                    Log.error("最大ユークリッド距離獲得ができませんでした．");
+                    if (maxComparisonEntry != null) {
+                        Log.debug("ユークリッド距離不足．tagString: " + tagString + " 最大ユークリッド距離獲得照合ファイル文:" + maxComparisonEntry.getKey() + " 距離: " + maxDistance);
+                        LogWriter.addNlList(tagString + "," + maxComparisonEntry.getKey() + "," + maxDistance);
+                    } else {
+                        Log.error("最大ユークリッド距離獲得ができませんでした．");
+                    }
                 }
-            }
-        });
+            });
 
-        // 有効なユークリッド距離を取得できたエントリーのみ処理を行う
-        validEntry.forEach((key, value) -> {
-            for (int i = 0; i < value.length; i += 3) {
-                String target;
-                Agent targetAgent;
-                Role role;
-                Species species;
-                switch (value[i]) {
-                    case "COMINGOUT":
-                        // <ROLE>照合
-                        role = getRole(nlText, Integer.parseInt(value[i + 1]));
-                        if (role != null) {
-                            protocolTextList.add("COMINGOUT " + talk.getAgent() + " " + role);   // プロトコル文変換
-                        } else {
-                            Log.error("Role型がnullのため変換に失敗しました．talk.getText(): " + talk.getText());
+            // 有効なユークリッド距離を取得できたエントリーのみ処理を行う
+            validEntry.forEach((key, value) -> {
+                for (int i = 0; i < value.length; i += 3) {
+                    String target;
+                    Agent targetAgent;
+                    Role role;
+                    Species species;
+                    switch (value[i]) {
+                        case "COMINGOUT":
+                            // <ROLE>照合
+                            role = getRole(nlText, Integer.parseInt(value[i + 1]));
+                            if (role != null) {
+                                protocolTextList.add("COMINGOUT " + talk.getAgent() + " " + role);   // プロトコル文変換
+                            } else {
+                                Log.error("Role型がnullのため変換に失敗しました．talk.getText(): " + talk.getText());
+                                break;
+                            }
                             break;
-                        }
-                        break;
-                    case "DIVINED":
-                        // <TARGET>照合
-                        target = getTargetString(nlText, Integer.parseInt(value[i + 1]));
-                        if (target == null) {
-                            Log.error("DIVINED変換中に予期しないエラー（null）が発生しました．talk.getText(): " + talk.getText());
+                        case "DIVINED":
+                            // <TARGET>照合
+                            target = getTargetString(nlText, Integer.parseInt(value[i + 1]));
+                            if (target == null) {
+                                Log.error("DIVINED変換中に予期しないエラー（null）が発生しました．talk.getText(): " + talk.getText());
+                                break;
+                            }
+                            // <ROLE>からSPECIES照合
+                            species = getSpecies(nlText, Integer.parseInt(value[i + 2]));
+                            if (species != null) {
+                                protocolTextList.add("DIVINED " + target + " " + species);
+                            }
                             break;
-                        }
-                        // <ROLE>からSPECIES照合
-                        species = getSpecies(nlText, Integer.parseInt(value[i + 2]));
-                        if (species != null) {
-                            protocolTextList.add("DIVINED " + target + " " + species);
-                        }
-                        break;
-                    case "ESTIMATE":
-                        // <TARGET>照合
-                        target = getTargetString(nlText, Integer.parseInt(value[i + 1]));
-                        if (target == null) {
-                            Log.error("DIVINED変換中に予期しないエラー（null）が発生しました．");
+                        case "ESTIMATE":
+                            // <TARGET>照合
+                            target = getTargetString(nlText, Integer.parseInt(value[i + 1]));
+                            if (target == null) {
+                                Log.error("DIVINED変換中に予期しないエラー（null）が発生しました．");
+                                break;
+                            }
+                            // <ROLE>照合
+                            role = getRole(nlText, Integer.parseInt((value[i + 2])));
+                            if (role != null) {
+                                protocolTextList.add("ESTIMATE " + target + " " + role);
+                            } else {
+                                Log.error("DIVINED変換中に予期しないエラー（null）が発生しました．");
+                                break;
+                            }
                             break;
-                        }
-                        // <ROLE>照合
-                        role = getRole(nlText, Integer.parseInt((value[i + 2])));
-                        if (role != null) {
-                            protocolTextList.add("ESTIMATE " + target + " " + role);
-                        } else {
-                            Log.error("DIVINED変換中に予期しないエラー（null）が発生しました．");
+                        case "VOTE":
+                            // <TARGET>照合
+                            target = getTargetString(nlText, Integer.parseInt(value[i + 1]));
+                            if (target != null) {
+                                protocolTextList.add("VOTE " + target);
+                            } else {
+                                Log.error("VOTE変換中に予期しないエラー（null）が発生しました．");
+                                break;
+                            }
                             break;
-                        }
-                        break;
-                    case "VOTE":
-                        // <TARGET>照合
-                        target = getTargetString(nlText, Integer.parseInt(value[i + 1]));
-                        if (target != null) {
-                            protocolTextList.add("VOTE " + target);
-                        } else {
-                            Log.error("VOTE変換中に予期しないエラー（null）が発生しました．");
-                            break;
-                        }
-                        break;
-                    case "REQUEST_VOTE":
-                        Log.debug("NlTopic: " + value[i]);
-                        // <TARGET>照合
-                        target = getTargetString(nlText, Integer.parseInt(value[i + 1]));
-                        targetAgent = convertStrToAgent(agentList, target);
-                        if (target != null) {
-                            nlpTextList.add(new ContentNL("REQUEST_VOTE", targetAgent));
-                            protocolTextList.add("VOTE " + target);
+                        case "REQUEST_VOTE":
+                            Log.debug("NlTopic: " + value[i]);
+                            // <TARGET>照合
+                            target = getTargetString(nlText, Integer.parseInt(value[i + 1]));
+                            targetAgent = convertStrToAgent(agentList, target);
+                            if (target != null) {
+                                nlpTextList.add(new ContentNL("REQUEST_VOTE", targetAgent));
+                                protocolTextList.add("VOTE " + target);
 //                            // 自分に投票発言をしているか
 //                            Agent ageTarget = convertStringToAgent(target);
 //                            if (boardSurface.getMe().toString().equals(target)) {
@@ -171,71 +182,72 @@ class NLP {
 //                                Utterance.getInstance().offerNL(">>" + talk.getAgent() + " " + target + "に投票？んーまだ分からないから保留したいよ。");
 //                            }
 //                            protocolTextList.add("REQUEST VOTE " + target);   // REQUESTの書き方がわからないので，コメントアウトしておく
-                        } else {
-                            Log.error("REQUEST_VOTE変換中に予期しないエラー（null）が発生しました．");
+                            } else {
+                                Log.error("REQUEST_VOTE変換中に予期しないエラー（null）が発生しました．");
+                                break;
+                            }
                             break;
-                        }
-                        break;
-                    case "LIAR":
-                        Log.debug("NlTopic: " + value[i]);
-                        // <TARGET>照合
-                        target = getTargetString(nlText, Integer.parseInt(value[i + 1]));
-                        targetAgent = convertStrToAgent(agentList, target);
-                        if (target != null) {
-                            nlpTextList.add(new ContentNL("LIAR", targetAgent));
+                        case "LIAR":
+                            Log.debug("NlTopic: " + value[i]);
+                            // <TARGET>照合
+                            target = getTargetString(nlText, Integer.parseInt(value[i + 1]));
+                            targetAgent = convertStrToAgent(agentList, target);
+                            if (target != null) {
+                                nlpTextList.add(new ContentNL("LIAR", targetAgent));
 //                            // 自分に嘘つき発言をしているか
 //                            if (boardSurface.getMe().toString().equals(target)) {
 //                                Utterance.getInstance().offerNL(">>" + talk.getAgent() + " " + "そう言う君も本当のことを言ってるか怪しい。");
 //                            }
-                        } else {
-                            Log.error("LIAR変換中に予期しないエラー（null）が発生しました．");
+                            } else {
+                                Log.error("LIAR変換中に予期しないエラー（null）が発生しました．");
+                                break;
+                            }
                             break;
-                        }
-                        break;
-                    case "SUSPICIOUS":
-                        Log.debug("NlTopic: " + value[i]);
-                        // <TARGET>照合
-                        target = getTargetString(nlText, Integer.parseInt(value[i + 1]));
-                        targetAgent = convertStrToAgent(agentList, target);
-                        if (target != null) {
-                            nlpTextList.add(new ContentNL("SUSPICIOUS", targetAgent));
+                        case "SUSPICIOUS":
+                            Log.debug("NlTopic: " + value[i]);
+                            // <TARGET>照合
+                            target = getTargetString(nlText, Integer.parseInt(value[i + 1]));
+                            targetAgent = convertStrToAgent(agentList, target);
+                            if (target != null) {
+                                nlpTextList.add(new ContentNL("SUSPICIOUS", targetAgent));
 //                            // 自分に疑い発言をしているか
 //                            if (boardSurface.getMe().toString().equals(target)) {
 //                                Utterance.getInstance().offerNL(">>" + talk.getAgent() + " " + "ボクは" + talk.getAgent() + "のこと信じてるよ。半分くらいね。");
 //                            }
-                        } else {
-                            Log.error("SUSPICIOUS変換中に予期しないエラー（null）が発生しました．");
+                            } else {
+                                Log.error("SUSPICIOUS変換中に予期しないエラー（null）が発生しました．");
+                                break;
+                            }
                             break;
-                        }
-                        break;
-                    case "TRUST":
-                        Log.debug("NlTopic: " + value[i]);
-                        // <TARGET>照合
-                        target = getTargetString(nlText, Integer.parseInt(value[i + 1]));
-                        targetAgent = convertStrToAgent(agentList, target);
-                        if (target != null) {
-                            nlpTextList.add(new ContentNL("TRUST", targetAgent));
+                        case "TRUST":
+                            Log.debug("NlTopic: " + value[i]);
+                            // <TARGET>照合
+                            target = getTargetString(nlText, Integer.parseInt(value[i + 1]));
+                            targetAgent = convertStrToAgent(agentList, target);
+                            if (target != null) {
+                                nlpTextList.add(new ContentNL("TRUST", targetAgent));
 //                            // 自分に疑い発言をしているか
 //                            if (boardSurface.getMe().toString().equals(target)) {
 //                                Utterance.getInstance().offerNL(">>" + talk.getAgent() + " " + "ボクも" + talk.getAgent() + "のこと信じてるよ！");
 //                            }
-                        } else {
-                            Log.error("TRUST変換中に予期しないエラー（null）が発生しました．");
+                            } else {
+                                Log.error("TRUST変換中に予期しないエラー（null）が発生しました．");
+                                break;
+                            }
                             break;
-                        }
-                        break;
-                    case "IMPOSSIBLE":  // 現在の手法では取り扱うことができない話題
-                        Log.debug("NlTopic: " + value[i]);
-                        break;
-                    case "NO_REQUIRED": // 処理不要な話題
-                        Log.debug("NlTopic: " + value[i]);
-                        break;
-                    default:
-                        Log.error("想定していないSwitch-defaultに分岐しました．talk.getText(): " + talk.getText() + " value[i]" + value[i]);
-                        break;
+                        case "IMPOSSIBLE":  // 現在の手法では取り扱うことができない話題
+                            Log.debug("NlTopic: " + value[i]);
+                            break;
+                        case "NO_REQUIRED": // 処理不要な話題
+                            Log.debug("NlTopic: " + value[i]);
+                            break;
+                        default:
+                            Log.error("想定していないSwitch-defaultに分岐しました．talk.getText(): " + talk.getText() + " value[i]" + value[i]);
+                            break;
+                    }
                 }
-            }
-        });
+            });
+        }
 
     }
 

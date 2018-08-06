@@ -1,4 +1,3 @@
-import org.aiwolf.common.data.Role;
 
 public class Main {
     private final static String HOST = "localhost"; // ホスト名 (kanolab 49.212.130.102)
