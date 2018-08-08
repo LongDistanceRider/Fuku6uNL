@@ -19,6 +19,15 @@ public class Utterance {
     /* 発言キュー */
     private ArrayDeque<String> utteranceQueue = new ArrayDeque<>();
 
+    /**
+     * フラグをリセット
+     */
+    public void resetFlag() {
+        flagList.clear();
+    }
+    /**
+     * キューを空にする
+     */
     public void clear() {
         utteranceQueue.clear();
     }

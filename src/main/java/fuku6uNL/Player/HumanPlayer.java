@@ -35,28 +35,33 @@ public class HumanPlayer implements Player {
 
     @Override
     public String talk() {
-        try {
-            Thread.sleep(1000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-        String talk_String = null;
-        BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
-        try {
-            System.out.print(gameInfo.getAgent() + "[" + gameInfo.getRole() + "] TALK: ");
-            talk_String = reader.readLine();
-//            reader.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        if (talk_String.equals("s")) {
-            talk_String = "Skip";
-        }
-        if (talk_String.equals("")) {
-            return "Over";
-        }
-        return talk_String;
+        return null;
     }
+
+//    @Override
+//    public String talk() {
+//        try {
+//            Thread.sleep(1000);
+//        } catch (InterruptedException e) {
+//            e.printStackTrace();
+//        }
+//        String talk_String = null;
+//        BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
+//        try {
+//            System.out.print(gameInfo.getAgent() + "[" + gameInfo.getRole() + "] TALK: ");
+//            talk_String = reader.readLine();
+////            reader.close();
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+//        if (talk_String.equals("s")) {
+//            talk_String = "Skip";
+//        }
+//        if (talk_String.equals("")) {
+//            return "Over";
+//        }
+//        return talk_String;
+//    }
 
     @Override
     public String whisper() {

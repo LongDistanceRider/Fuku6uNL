@@ -195,7 +195,12 @@ public class Fuku6uNL implements Player {
             // 占い師３黒出し１は黒出した占い師を投票黒出し２はどちらかの占い師に投票，３は占い師に投票
 
         }
-        return Utterance.getInstance().poll();
+        String utterance = Utterance.getInstance().poll();
+        if (utterance != null) {
+            return utterance;
+        } else {
+            return "Over";
+        }
     }
 
     @Override
@@ -262,6 +267,8 @@ public class Fuku6uNL implements Player {
                 Log.info("勝ち");
             }
         }
+        Utterance.getInstance().resetFlag();
+        Utterance.getInstance().clear();
         Log.endLog();
         LogWriter.finish();
     }
