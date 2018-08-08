@@ -6,6 +6,7 @@ import fuku6uNL.utterance.Utterance;
 import org.aiwolf.common.data.Agent;
 import org.aiwolf.common.data.Species;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -31,8 +32,12 @@ public abstract class AbstractRole {
      */
     protected void lieDivined (BoardSurface boardSurface, List<Agent> candidateAgentList) {
         candidateAgentList.remove(boardSurface.getGameInfo().getAgent());
-        candidateAgentList.removeAll(boardSurface.getDivinedAgentList(Species.HUMAN));
-        candidateAgentList.removeAll(boardSurface.getDivinedAgentList(Species.WEREWOLF));
+        // 自分が発言した占い結果をもとに，すでに結果を出したエージェントを削除する
+        List<Agent> divinedAgentList = new ArrayList<>();
+        boardSurface.getDivinedMap().forEach(((agent, species) -> {
+            divinedAgentList.add(agent);
+        }));
+        candidateAgentList.removeAll(divinedAgentList);
 
         if (!candidateAgentList.isEmpty()) {
             Agent lieTarget = Util.randomElementSelect(candidateAgentList);

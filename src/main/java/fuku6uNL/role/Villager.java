@@ -4,6 +4,7 @@ import fuku6uNL.board.BoardSurface;
 import fuku6uNL.utterance.Utterance;
 import org.aiwolf.common.data.Agent;
 import org.aiwolf.common.data.Role;
+import org.aiwolf.common.data.Species;
 
 import java.util.List;
 
@@ -33,22 +34,26 @@ public class Villager extends AbstractRole {
     public void talk(int turn, BoardSurface boardSurface) {
         switch (turn) {
             case 4:
+                List<Agent> seerCoAgentList = boardSurface.getCoAgentList(Role.SEER);
                 // 占い師が2人の時
-                int NumSeerCo = boardSurface.getNumSeerCo();
-                if (NumSeerCo == 2) {
-                    // 真占い師確定しているかチェックする
-                    Agent trueSeerAgent = boardSurface.trueSeerAgent();
-                    if (trueSeerAgent != null) {
-                        Utterance.getInstance().offer(trueSeerAgent + "は信用できるね。");
-                        Agent votedAgent = boardSurface.submitVoteAndTarget(trueSeerAgent);
-                        if (votedAgent != null) {
-                            Utterance.getInstance().offer(trueSeerAgent + "と同じく" + votedAgent + "に投票するよ");
-                            forceVoteTarget = votedAgent;
+                if (seerCoAgentList.size() == 2) {
+                    // 自分に黒出ししたエージェントがいるかチェックする
+                    List<Agent> liarAgent = boardSurface.divinedMeBlackAgentList(boardSurface.getGameInfo().getAgent(), Species.WEREWOLF);
+                    if (!liarAgent.isEmpty()) {
+                        seerCoAgentList.removeAll(liarAgent);
+                        if (seerCoAgentList.size() == 1) {
+                            // 真占い師確定
+                            Agent trustSeer = seerCoAgentList.get(0);
+                            Utterance.getInstance().offer("ボクに黒出しした" + liarAgent.get(0) + "は信用できない！だから、対抗の" + trustSeer + "を信じることにするよ。");
+                            Agent votedAgent = boardSurface.submitVoteAndTarget(trustSeer);
+                            if (votedAgent != null) {
+                                // 真占い師と同じ投票先に決定する
+                                Utterance.getInstance().offer(trustSeer + "と同じく" + votedAgent + "に投票するよ");
+                                forceVoteTarget = votedAgent;
+                            }
                         }
                     }
-                }
-                // 占い師が3人の時
-                if (NumSeerCo == 3) {
+                } else if (seerCoAgentList.size() == 3) {
                     Utterance.getInstance().offer("占い師の中から1人投票するね。");
                     Agent maxVotedAgent = boardSurface.maxVotedAgent();
                     if (boardSurface.getCoAgentList(Role.SEER).contains(maxVotedAgent)) {

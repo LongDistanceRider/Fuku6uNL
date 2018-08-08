@@ -8,7 +8,9 @@ import org.aiwolf.common.data.Agent;
 import org.aiwolf.common.data.Species;
 import org.aiwolf.common.data.Talk;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 /**
@@ -80,9 +82,9 @@ public class Listen {
                     // 対象が自分かチェック
                     Observer.estimateTargetMe(boardSurface.getGameInfo().getAgent(), boardSurface.getCoRole(), submit, content.getTarget(), content.getRole());
                     // 対象が黒出しエージェントかチェック
-                    Observer.estimateTargetBlack(boardSurface.getDivinedAgentList(Species.WEREWOLF), submit, content.getTarget(), content.getRole());
+                    Observer.estimateTargetBlack(divinedSpeciesTargetList(boardSurface.getDivinedMap(), Species.WEREWOLF), submit, content.getTarget(), content.getRole());
                     // 対象が白だしエージェントかチェック
-                    Observer.estimateTargetWhite(boardSurface.getDivinedAgentList(Species.HUMAN), submit, content.getTarget(), content.getRole());
+                    Observer.estimateTargetWhite(divinedSpeciesTargetList(boardSurface.getDivinedMap(), Species.HUMAN), submit, content.getTarget(), content.getRole());
                     break;
                     /* --- 能力結果に関する文 --- */
                 case DIVINED:
@@ -104,9 +106,9 @@ public class Listen {
                     // 対象が自分かチェック
                     Observer.voteTargetMe(boardSurface.getGameInfo().getAgent(), submit, content.getTarget());
                     // 対象が黒出ししたエージェントかチェック
-                    Observer.voteTargetBlack(boardSurface.getDivinedAgentList(Species.WEREWOLF), submit, content.getTarget());
+                    Observer.voteTargetBlack(divinedSpeciesTargetList(boardSurface.getDivinedMap(), Species.WEREWOLF), submit, content.getTarget());
                     // 対象が白だししたエージェントがチェック
-                    Observer.voteTargetWhite(boardSurface.getDivinedAgentList(Species.HUMAN), submit, content.getTarget());
+                    Observer.voteTargetWhite(divinedSpeciesTargetList(boardSurface.getDivinedMap(), Species.HUMAN), submit, content.getTarget());
                     break;
 //                case ATTACK:
 //                    break;
@@ -136,9 +138,9 @@ public class Listen {
                 // 対象が自分かチェック
                 Observer.requestVoteTargetMe(boardSurface.getGameInfo().getAgent(), submit, contentNl.getTarget());
                 // 対象が黒出ししたエージェントかチェック
-                Observer.requestVoteTargetBlack(boardSurface.getDivinedAgentList(Species.WEREWOLF), submit, contentNl.getTarget());
+                Observer.requestVoteTargetBlack(divinedSpeciesTargetList(boardSurface.getDivinedMap(), Species.WEREWOLF), submit, contentNl.getTarget());
                 // 対象が白だししたエージェントがチェック
-                Observer.requestVoteTargetWhite(boardSurface.getDivinedAgentList(Species.HUMAN), submit, contentNl.getTarget());
+                Observer.requestVoteTargetWhite(divinedSpeciesTargetList(boardSurface.getDivinedMap(), Species.HUMAN), submit, contentNl.getTarget());
                 break;
             case "LIAR":
                 // 対象が自分かチェック
@@ -155,5 +157,19 @@ public class Listen {
         }
     }
 
+    /**
+     * speciesで指定された占い判定を受けたエージェントのリストを返す（自分の（発言した）占い結果のみ）
+     * @param species HUMAN または WEREWOLF
+     * @return 占い判定を受けたエージェントのリスト
+     */
+    private List<Agent> divinedSpeciesTargetList(Map<Agent, Species> divinedMap, Species species) {
+        List<Agent> divinedAgentList = new ArrayList<>();
+        divinedMap.forEach((agent, result) -> {
+            if (result.equals(species)) {
+                divinedAgentList.add(agent);
+            }
+        });
+        return divinedAgentList;
+    }
 
 }

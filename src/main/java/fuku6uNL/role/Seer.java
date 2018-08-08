@@ -34,8 +34,7 @@ public class Seer extends AbstractRole {
                 // 占い先を探す
                 List<Agent> candidateAgentList = gameInfo.getAliveAgentList();
                 // 占い結果（本当）が出ているものは除く
-                candidateAgentList.removeAll(boardSurface.getTrueDivinedAgentList(Species.HUMAN));
-                candidateAgentList.removeAll(boardSurface.getTrueDivinedAgentList(Species.WEREWOLF));
+                candidateAgentList.removeAll(boardSurface.getTrueDivinedMap().keySet());
 
                 // 偽占い結果作成と発言
                 lieDivined(boardSurface, candidateAgentList);

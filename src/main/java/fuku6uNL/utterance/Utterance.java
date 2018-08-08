@@ -52,11 +52,30 @@ public class Utterance {
      * @return キューが空の場合はnull
      */
     public String poll() {
-        // キューにある発言を繋げて一気に返す
+        // キューにある発言をアンカーがあるところまで繋げて返す（アンカー発言が冒頭に来るようにするため）
+        // また，アンカー発言は必ず1回分使用する．
+        String utterance = utteranceQueue.poll();
+        if (utterance == null) {
+            return null;
+        }
+        // キューの先頭がアンカー発言の場合は，そのまま返す
+        if (utterance.startsWith(">>Agent[")) {
+            return utterance;
+        }
+        // キューの発言がアンカー発言以外の場合は，アンカー発言，またはnullが入るまでStringを繋げる
         StringBuilder stringBuilder = new StringBuilder();
-        utteranceQueue.forEach(stringBuilder::append);
-        utteranceQueue.clear();
-        return stringBuilder.toString();
+        stringBuilder.append(utterance);
+        while (true) {
+            utterance = utteranceQueue.poll();
+            if (utterance == null) {
+                return stringBuilder.toString();
+            }
+            if (utterance.startsWith(">>Agent[")) {
+                utteranceQueue.offerFirst(utterance);   // キューに戻す
+                return stringBuilder.toString();
+            }
+            stringBuilder.append(utterance);
+        }
     }
 
     /* *** initialize-on-demand holder *** */
@@ -65,14 +84,14 @@ public class Utterance {
     }
     private Utterance(){}
     private static class UtteranceHolder {
-        public static final Utterance INSTANCE = new Utterance();
+        static final Utterance INSTANCE = new Utterance();
     }
     /* *** *** */
 
     /**
      * Speciesを自然言語に変換
-     * @param species　
-     * @return
+     * @param species　変換するSpecies型
+     * @return 「人間」または「人狼」のStringを返却
      */
     public static String convertSpeciesToNl (Species species) {
         if (species.equals(Species.HUMAN)) {
@@ -83,8 +102,8 @@ public class Utterance {
 
     /**
      * Speciesを自然言語（白黒）に変換
-     * @param species
-     * @return
+     * @param species 変換するSpecies型
+     * @return 「白」または「黒」のStringを返却
      */
     public static String convertSpeciesToWhiteBlack (Species species) {
         if (species.equals(Species.HUMAN)) {

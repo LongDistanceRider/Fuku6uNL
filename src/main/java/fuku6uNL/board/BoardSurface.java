@@ -1,6 +1,5 @@
 package fuku6uNL.board;
 
-import org.aiwolf.client.lib.Topic;
 import org.aiwolf.common.data.Agent;
 import org.aiwolf.common.data.Role;
 import org.aiwolf.common.data.Species;
@@ -38,6 +37,13 @@ public class BoardSurface {
     }
     public int getNumSeerCo() {
         return numSeerCo;
+    }
+    public Map<Agent, Species> getDivinedMap() {
+        return divinedMap;
+    }
+
+    public Map<Agent, Species> getTrueDivinedMap() {
+        return trueDivinedMap;
     }
 
     // setter
@@ -136,6 +142,15 @@ public class BoardSurface {
     /* === === === === === === === === === === === === === === === === === === === === === */
     /*  meの発言 */
     /* === === === === === === === === === === === === === === === === === === === === === */
+    /**
+     * 占い結果（発言した）を保管
+     * @param target 占い先
+     * @param result 占い結果
+     */
+    public void putDivinedMap(Agent target, Species result) {
+        divinedMap.put(target, result);
+    }
+
     /* === === === === === === === === === === === === === === === === === === === === === */
     /*  状況 */
     /* === === === === === === === === === === === === === === === === === === === === === */
@@ -145,42 +160,32 @@ public class BoardSurface {
     /* === === === === === === === === === === === === === === === === === === === === === */
 
     /* === === === === === === === === === === === === === === === === === === === === === */
-    /* 推論後のagentに対する情報 */
-    /* === === === === === === === === === === === === === === === === === === === === === */
-
-    /* === === === === === === === === === === === === === === === === === === === === === */
-    /* その他 */
+    /* 特定の条件に合うエージェントを返す */
     /* === === === === === === === === === === === === === === === === === === === === === */
 
     /**
-     * 呼び出された時点での真占い師を返す（自分の役職が占い師以外を想定）
-     * @return
+     * checkTargetにcheckResultを出したエージェントを返すメソッド
+     * ex:
+     *  checkTarget = 自分，checkResult = WEREWOLFの時
+     *  自分に黒出ししたエージェントリストが帰ってくる
+     *
+     * @param checkTarget 調べたいターゲット
+     * @param checkResult 条件となるSpecies
+     * @return 条件にあったエージェントリスト
      */
-    public Agent trueSeerAgent() {
-        List<Agent> seerCoAgentList = getCoAgentList(Role.SEER);
-        switch (numSeerCo) {
-            case 1:
-                if (seerCoAgentList.size() == 1) {
-                    return seerCoAgentList.get(0);
+    public List<Agent> divinedMeBlackAgentList (Agent checkTarget, Species checkResult) {
+        List<Agent> correctAgentList = new ArrayList<>();
+        playerInfoMap.forEach(((agent, playerInfo) ->  {
+            Map<Agent, Species> divined = playerInfo.getDivinedMap();
+            divined.forEach(((target, result) -> {
+                if (target.equals(checkTarget) && result.equals(checkResult)) {
+                    correctAgentList.add(agent);
                 }
-            case 2:
-                // 自分に黒出ししたエージェントはいるか
-                for (Agent seerCoAgent :
-                        seerCoAgentList) {
-                    Map<Agent, Species> divined = getPlayerDivMap(seerCoAgent);
-                    divined.forEach((target, result) -> {
-                        if (target.equals(getGameInfo().getAgent()) && result.equals(Species.WEREWOLF)) {
-                            seerCoAgentList.remove(seerCoAgent);
-                        }
-                    });
-                }
-                if (seerCoAgentList.size() == 1) {
-                    return seerCoAgentList.get(0);
-                }
-                break;
-        }
-        return null;
+            }));
+        }));
+        return correctAgentList;
     }
+
     /**
      * ある役職をCOしたエージェントのリストを返す
      * @param role COした役職
@@ -198,21 +203,13 @@ public class BoardSurface {
         });
         return coRoleAgentList;
     }
+    /* === === === === === === === === === === === === === === === === === === === === === */
+    /* その他 */
 
-    /**
-     * speciesで指定された占い判定を受けたエージェントのリストを返す（自分の（発言した）占い結果のみ）
-     * @param species HUMAN または WEREWOLF
-     * @return 占い判定を受けたエージェントのリスト
-     */
-    public List<Agent> getDivinedAgentList(Species species) {
-        List<Agent> divinedAgentList = new ArrayList<>();
-        divinedMap.forEach((agent, result) -> {
-            if (result.equals(species)) {
-                divinedAgentList.add(agent);
-            }
-        });
-        return divinedAgentList;
-    }
+    /* === === === === === === === === === === === === === === === === === === === === === */
+
+
+
 
 //    /**
 //     * 最後の（自分が出した）占い結果を取得する
@@ -226,21 +223,6 @@ public class BoardSurface {
 //        }
 //        return latestDivinedMap;
 //    }
-
-    /**
-     * speciesで指定された占い判定を受けたエージェントのリストを返す（自分の（本当の）占い結果のみ）
-     * @param species HUMAN または WEREWOLF
-     * @return 占い判定を受けたエージェントのリスト
-     */
-    public List<Agent> getTrueDivinedAgentList(Species species) {
-        List<Agent> trueDivinedAgentList = new ArrayList<>();
-        trueDivinedMap.forEach((agent, result) -> {
-            if (result.equals(species)) {
-                trueDivinedAgentList.add(agent);
-            }
-        });
-        return trueDivinedAgentList;
-    }
 
 //    /**
 //     * speciesで指定された占い判定を受けたエージェントのリストを返す（他プレイヤからの占い結果のみ）
@@ -258,14 +240,6 @@ public class BoardSurface {
 //        });
 //        return agentList;
 //    }
-    /**
-     * 占い結果（発言した）を保管
-     * @param target 占い先
-     * @param result 占い結果
-     */
-    public void putDivinedMap(Agent target, Species result) {
-        divinedMap.put(target, result);
-    }
 
     /**
      * 占い結果（本当）を保管

@@ -225,10 +225,8 @@ public class Fuku6uNL implements Player {
         List<Agent> candidateAgentList = boardSurface.getGameInfo().getAliveAgentList();
         candidateAgentList.remove(boardSurface.getGameInfo().getAgent());
         candidateAgentList.remove(boardSurface.getGameInfo().getLatestExecutedAgent());
-        candidateAgentList.removeAll(boardSurface.getDivinedAgentList(Species.HUMAN));
-        candidateAgentList.removeAll(boardSurface.getDivinedAgentList(Species.WEREWOLF));
-        candidateAgentList.removeAll(boardSurface.getTrueDivinedAgentList(Species.HUMAN));
-        candidateAgentList.removeAll(boardSurface.getTrueDivinedAgentList(Species.WEREWOLF));
+        candidateAgentList.removeAll(boardSurface.getDivinedMap().keySet());
+        candidateAgentList.removeAll(boardSurface.getTrueDivinedMap().keySet());
 
         Agent divinedTarget = Util.randomElementSelect(candidateAgentList);
 
