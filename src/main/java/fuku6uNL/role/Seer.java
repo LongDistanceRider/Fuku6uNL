@@ -75,9 +75,4 @@ public class Seer extends AbstractRole {
         }
 
     }
-
-    @Override
-    public void finish() {
-
-    }
 }

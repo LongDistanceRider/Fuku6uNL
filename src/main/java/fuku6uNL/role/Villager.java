@@ -66,9 +66,4 @@ public class Villager extends AbstractRole {
                 break;
         }
     }
-
-    @Override
-    public void finish() {
-
-    }
 }
