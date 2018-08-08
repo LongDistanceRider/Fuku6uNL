@@ -24,6 +24,7 @@ public class Villager extends AbstractRole {
 
     @Override
     public Agent vote(BoardSurface boardSurface) {
+        Agent forceVoteTarget = boardSurface.getForceVoteTarget();
         if (forceVoteTarget != null) {
             return forceVoteTarget;
         }
@@ -49,7 +50,7 @@ public class Villager extends AbstractRole {
                             if (votedAgent != null) {
                                 // 真占い師と同じ投票先に決定する
                                 Utterance.getInstance().offer(trustSeer + "と同じく" + votedAgent + "に投票するよ");
-                                forceVoteTarget = votedAgent;
+                                boardSurface.setForceVoteTarget(votedAgent);
                             }
                         }
                     }
@@ -58,7 +59,7 @@ public class Villager extends AbstractRole {
                     Agent maxVotedAgent = boardSurface.maxVotedAgent();
                     if (boardSurface.getCoAgentList(Role.SEER).contains(maxVotedAgent)) {
                         Utterance.getInstance().offer("占い師の中で一番投票されそうな" + maxVotedAgent + "に決定！");
-                        forceVoteTarget = maxVotedAgent;
+                        boardSurface.setForceVoteTarget(maxVotedAgent);
                     }
                 }
                 break;

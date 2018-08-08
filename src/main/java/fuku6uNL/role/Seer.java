@@ -16,7 +16,6 @@ public class Seer extends AbstractRole {
 
     @Override
     public void dayStart(BoardSurface boardSurface) {
-        forceVoteTarget = null;
         GameInfo gameInfo = boardSurface.getGameInfo();
         // 占い師CO
         boardSurface.setCoRole(Role.SEER);
@@ -43,7 +42,7 @@ public class Seer extends AbstractRole {
                 boardSurface.putTrueDivinedMap(target, result);
                 Utterance.getInstance().offer(target +"の占い結果は" + Utterance.convertSpeciesToNl(result) + "でした！");
                 if (result.equals(Species.WEREWOLF)) {
-                    forceVoteTarget = target;
+                    boardSurface.setForceVoteTarget(target);
                 }
             }
         }
@@ -51,6 +50,7 @@ public class Seer extends AbstractRole {
 
     @Override
     public Agent vote(BoardSurface boardSurface) {
+        Agent forceVoteTarget = boardSurface.getForceVoteTarget();
         if (forceVoteTarget != null) {
             return forceVoteTarget;
         }

@@ -24,6 +24,8 @@ public class BoardSurface {
     private Map<Agent, Species> trueDivinedMap = new LinkedHashMap<>();
     // PP
     private boolean PP = false;
+    // 強制投票先
+    private Agent forceVoteTarget;
 
     // getter
     public GameInfo getGameInfo() {
@@ -46,6 +48,10 @@ public class BoardSurface {
         return trueDivinedMap;
     }
 
+    public Agent getForceVoteTarget() {
+        return forceVoteTarget;
+    }
+
     // setter
     public void setPP(boolean PP) {
         this.PP = PP;
@@ -55,6 +61,10 @@ public class BoardSurface {
     }
     public void setCoRole (Role role) {
         roleInfo.setCoRole(role);
+    }
+
+    public void setForceVoteTarget(Agent forceVoteTarget) {
+        this.forceVoteTarget = forceVoteTarget;
     }
 
     /**

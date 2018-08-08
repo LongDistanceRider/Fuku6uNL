@@ -15,7 +15,6 @@ public class Possessed extends AbstractRole {
 
     @Override
     public void dayStart(BoardSurface boardSurface) {
-        forceVoteTarget = null;
         GameInfo gameInfo = boardSurface.getGameInfo();
 
         // 占い師CO
@@ -51,6 +50,7 @@ public class Possessed extends AbstractRole {
             }
             // 狂狼COしているエージェントがいない，2人以上狂狼COがいる場合はPP失敗．
         }
+        Agent forceVoteTarget = boardSurface.getForceVoteTarget();
         if (forceVoteTarget != null) {
             return forceVoteTarget;
         }

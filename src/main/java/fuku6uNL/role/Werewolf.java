@@ -15,7 +15,6 @@ public class Werewolf extends AbstractRole {
 
     @Override
     public void dayStart(BoardSurface boardSurface) {
-        forceVoteTarget = null;
         GameInfo gameInfo = boardSurface.getGameInfo();
 
         // 占い師COするか決める（確率0.5）
@@ -36,6 +35,7 @@ public class Werewolf extends AbstractRole {
 
     @Override
     public Agent vote(BoardSurface boardSurface) {
+        Agent forceVoteTarget = boardSurface.getForceVoteTarget();
         if (forceVoteTarget != null) {
             return forceVoteTarget;
         }

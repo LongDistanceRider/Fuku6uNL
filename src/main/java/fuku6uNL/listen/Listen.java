@@ -3,6 +3,7 @@ package fuku6uNL.listen;
 import fuku6uNL.board.BoardSurface;
 import fuku6uNL.log.Log;
 import fuku6uNL.observer.Observer;
+import fuku6uNL.utterance.Utterance;
 import org.aiwolf.client.lib.Content;
 import org.aiwolf.common.data.Agent;
 import org.aiwolf.common.data.Species;
@@ -155,6 +156,12 @@ public class Listen {
                 Observer.trustTargetMe(boardSurface.getGameInfo().getAgent(), submit, contentNl.getTarget());
                 break;
             case "WHO_VOTE":
+                Agent forceVoteTarget = boardSurface.getForceVoteTarget();
+                if (forceVoteTarget != null) {
+                    Utterance.getInstance().offer(">>" + submit + " 今のところ" + forceVoteTarget + "に投票するつもりだよ。");
+                } else {
+                    Utterance.getInstance().offer(">>" + submit + " 今は特に決めてないな。");
+                }
                 break;
             case "WHO_ROLE":
                 break;

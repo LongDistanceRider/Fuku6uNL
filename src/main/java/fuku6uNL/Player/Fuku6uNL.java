@@ -41,6 +41,7 @@ public class Fuku6uNL implements Player {
 
     @Override
     public void dayStart() {
+        boardSurface.setForceVoteTarget(null);
         GameInfo gameInfo = boardSurface.getGameInfo();
         Log.trace("dayStart()");
         Log.info("=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=");

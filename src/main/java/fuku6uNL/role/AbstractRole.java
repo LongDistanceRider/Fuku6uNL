@@ -13,8 +13,6 @@ import java.util.Map;
 
 public abstract class AbstractRole {
 
-    // 強制投票先
-    protected Agent forceVoteTarget;
     public abstract void dayStart(BoardSurface boardSurface);
     public abstract Agent vote(BoardSurface boardSurface);
     public abstract void talk(int turn, BoardSurface boardSurface);
@@ -43,7 +41,7 @@ public abstract class AbstractRole {
             Species result = Species.HUMAN;
             if (Util.cheatingCoin(0.8)) {
                 result = Species.WEREWOLF;
-                forceVoteTarget = lieTarget;
+                boardSurface.setForceVoteTarget(lieTarget);
             }
             boardSurface.putDivinedMap(lieTarget, result);
             Utterance.getInstance().offer(lieTarget +"の占い結果は" + Utterance.convertSpeciesToNl(result) + "でした！");
