@@ -235,6 +235,34 @@ class NLP {
                                 break;
                             }
                             break;
+                        case "WHO_VOTE":
+                            Log.debug("NlTopic: " + value[i]);
+                            // <TARGET>照合
+                            target = getTargetString(nlText, Integer.parseInt(value[i + 1]));
+                            if (target != null) {
+                                protocolTextList.add("WHO_VOTE " + target);
+                            } else {
+                                Log.error("VOTE変換中に予期しないエラー（null）が発生しました．");
+                                break;
+                            }
+                            break;
+                        case "WHO_ROLE":
+                            Log.debug("NlTopic: " + value[i]);
+                            // <TARGET>照合
+                            target = getTargetString(nlText, Integer.parseInt(value[i + 1]));
+                            if (target == null) {
+                                Log.error("DIVINED変換中に予期しないエラー（null）が発生しました．");
+                                break;
+                            }
+                            // <ROLE>照合
+                            role = getRole(nlText, Integer.parseInt((value[i + 2])));
+                            if (role != null) {
+                                protocolTextList.add("WHO_ROLE " + target + " " + role);
+                            } else {
+                                Log.error("DIVINED変換中に予期しないエラー（null）が発生しました．");
+                                break;
+                            }
+                            break;
                         case "IMPOSSIBLE":  // 現在の手法では取り扱うことができない話題
                             Log.debug("NlTopic: " + value[i]);
                             break;

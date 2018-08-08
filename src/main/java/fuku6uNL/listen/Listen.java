@@ -154,6 +154,10 @@ public class Listen {
                 // 対象が自分かチェック
                 Observer.trustTargetMe(boardSurface.getGameInfo().getAgent(), submit, contentNl.getTarget());
                 break;
+            case "WHO_VOTE":
+                break;
+            case "WHO_ROLE":
+                break;
         }
     }
 
