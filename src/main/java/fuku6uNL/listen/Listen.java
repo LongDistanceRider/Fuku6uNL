@@ -36,6 +36,10 @@ public class Listen {
             Talk talk = talkList.get(i);
             Log.info("発言者: " + talk.getAgent() + " Mes(NL): " + talk.getText());
 
+            // 0日目は処理をしない
+            if (boardSurface.getGameInfo().getDay() == 0) {
+                continue;
+            }
             // 自分の発言は処理をしない
             if (talk.getAgent().equals(boardSurface.getGameInfo().getAgent())) {
                 continue;

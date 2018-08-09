@@ -2,6 +2,7 @@ package fuku6uNL.Player;
 
 import fuku6uNL.board.BoardSurface;
 import fuku6uNL.listen.Listen;
+import fuku6uNL.listen.NLP;
 import fuku6uNL.log.Log;
 import fuku6uNL.log.LogWriter;
 import fuku6uNL.role.*;
@@ -34,9 +35,7 @@ public class Fuku6uNL implements Player {
     public void update(GameInfo gameInfo) {
         Log.trace("update()");
         this.boardSurface.update(gameInfo);
-        if (gameInfo.getDay() != 0) {
-            listen.update(boardSurface);
-        }
+        listen.update(boardSurface);
     }
 
     @Override
@@ -155,6 +154,15 @@ public class Fuku6uNL implements Player {
                         target = "ボク";
                     }
                     utteranceString.append(seer).append("は").append(target).append("に").append(Utterance.convertSpeciesToWhiteBlack(divinedMapEntry.getValue()));
+                    // 占い師2人の時に，対抗に黒出しするエージェントは怪しいよね　と言う．
+                    if (boardSurface.getPlayerCoRole(NLP.convertStrToAgent(boardSurface.getGameInfo().getAgentList(), target)).equals(Role.SEER)
+                            && divinedMapEntry.getValue().equals(Species.WEREWOLF)) {
+                        if (boardSurface.getNumSeerCo() == 2) {
+                            Utterance.getInstance().offer("対抗占い師に黒出し？2人占い師COなら対抗は狂人がセオリーだし、" + seer + "の判定は怪しいよ。");
+                        } else if (boardSurface.getNumSeerCo() == 3) {
+                            Utterance.getInstance().offer("3人占い師COで、対抗占い師に黒出しした" + seer + "は信用できると思うよ。");
+                        }
+                    }
                 } else {
                     Utterance.getInstance().offer(seer +"って占い結果話したっけ？");
                 }

@@ -15,7 +15,7 @@ import java.util.*;
 
 import static fuku6uNL.listen.NLText.isChat;
 
-class NLP {
+public class NLP {
 
     // PATH
     private static final String dir = System.getProperty("user.dir");
@@ -357,7 +357,7 @@ class NLP {
         return targetString;
     }
 
-    private Agent convertStrToAgent(List<Agent> agentList, String string) {
+    public static Agent convertStrToAgent(List<Agent> agentList, String string) {
         for (Agent agent :
                 agentList) {
             if (agent.toString().equals(string)) {
