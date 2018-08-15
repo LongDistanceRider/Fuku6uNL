@@ -65,7 +65,7 @@ public class NLP {
      */
     NLP(List<Agent> agentList, Talk talk) {
         // 1文に分解後，フィルタリングを施し，NLTextインスタンスを生成する．
-        String[] oneSentences = talk.getText().split("[!.。！]");
+        String[] oneSentences = talk.getText().split("[!.。！？]");
         for (String oneSentence : oneSentences) {
             // フィルタリング
             if (oneSentence.equals("") || isChat(oneSentence)) {
@@ -95,11 +95,11 @@ public class NLP {
                 if (maxDistance > DISTANCE_THRESHOLD) {
                     Log.trace("最大ユークリッド距離獲得照合ファイル文: " + maxComparisonEntry.getKey() + " 距離: " + maxDistance);
                     validEntry.put(maxComparisonEntry.getKey(), maxComparisonEntry.getValue());
-                    LogWriter.addNlList(tagString + "," + maxComparisonEntry.getKey() + "," + maxDistance);
+                    LogWriter.addNlList(tagString + "," + maxComparisonEntry.getKey() + "," + maxComparisonEntry.getValue()[0] + "," + oneSentence + "," + maxDistance);
                 } else {
                     if (maxComparisonEntry != null) {
                         Log.debug("ユークリッド距離不足．tagString: " + tagString + " 最大ユークリッド距離獲得照合ファイル文:" + maxComparisonEntry.getKey() + " 距離: " + maxDistance);
-                        LogWriter.addNlList(tagString + "," + maxComparisonEntry.getKey() + "," + maxDistance);
+                        LogWriter.addNlList(tagString + "," + maxComparisonEntry.getKey() + "," + maxComparisonEntry.getValue()[0] + "," + oneSentence + "," + maxDistance);
                     } else {
                         Log.error("最大ユークリッド距離獲得ができませんでした．");
                     }
@@ -366,7 +366,7 @@ public class NLP {
                 return agent;
             }
         }
-        Log.error("stringからAgentへの変換に失敗しました．");
+        Log.error("stringからAgentへの変換に失敗しました．string: " + string);
         return null;
     }
 }

@@ -74,10 +74,6 @@ public class TopicObserver {
                         break;
                 }
             }
-            if (myCo != null && myCo.equals(role)) {
-                Utterance.getInstance().offer(">>" + submit + " そうだよ！ボクが" + role + "なんだ！");
-            }
-
         }
         // 対象が白or黒出しエージェントか
         boardSurface.getDivinedMap().forEach(((divinedTarget, divinedResult) -> {

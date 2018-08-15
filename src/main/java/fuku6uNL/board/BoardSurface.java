@@ -77,6 +77,8 @@ public class BoardSurface {
         gameInfo.getAgentList().stream()
                 .filter(agent -> agent != gameInfo.getAgent())
                 .forEach(agent -> playerInfoMap.put(agent, new PlayerInfo()));
+        // TODO ロジックエラーを取り除くために自分自身もPlayerInfoに入れるが，これは設計に予定していない．ロジックエラーが発生するのは，Map.getKey(me)した時
+        playerInfoMap.put(gameInfo.getAgent(), new PlayerInfo());
     }
 
     /**

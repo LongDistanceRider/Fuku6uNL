@@ -100,8 +100,13 @@ class NLText {
             int index = tmpText.indexOf("Agent[");
             if (index != -1) {
                 int endIndex = tmpText.indexOf("]");
-                addTargetList((String) tmpText.subSequence(index, endIndex + 1));
-                tmpText = tmpText.substring(endIndex + 1);
+                if (endIndex != -1) {
+                    addTargetList((String) tmpText.subSequence(index, endIndex + 1));
+                    tmpText = tmpText.substring(endIndex + 1);
+                } else {
+                    Log.error("<TARGET>のタグ変換時にエラー発生 tmpText: " + tmpText);
+                    break;
+                }
             } else {
                 break;
             }

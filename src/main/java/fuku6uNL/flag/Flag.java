@@ -14,7 +14,7 @@ public class Flag {
     private static final LogLevel maxLogLevel = LogLevel.TRACE;
 
     /* ファイルを書き出すか */
-    private static final boolean write = false;
+    private static final boolean write = true;
 
     // getter
     public static LogLevel getMaxLogLevel() {

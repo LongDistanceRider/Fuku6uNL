@@ -54,7 +54,6 @@ public class Listen {
             List<String> protocolTextList = nlp.getProtocolTextList();
             protocolTextList.forEach(text -> protocolTopic(talk.getAgent(), text));
 
-
             // 自然言語話題処理
             List<ContentNL> nlTextList = nlp.getNlpTextList();
             nlTextList.forEach((contentNl -> nlpTopic(talk.getAgent(), contentNl)));
@@ -88,6 +87,12 @@ public class Listen {
                     BoardSurface.getInstance().setPlayerDivMap(submit, content.getTarget(), content.getResult()); // 占い結果を保管
                     // 対象をチェック
                     TopicObserver.checkDivinedTarget(submit, content.getTarget(), content.getResult());
+                    // 占い師COしていない場合は，占い師COとして処理をする
+                    Role coRole = BoardSurface.getInstance().getPlayerCoRole(submit);
+                    if (coRole == null) {
+                        Log.debug("占い師COしていないエージェントが占い結果を話したため，COMINGOUT SEERを生成しました．");
+                        protocolTopic(submit, "COMINGOUT " + submit + " SEER");
+                    }
                     break;
 //                case IDENTIFIED:
 //                    break;

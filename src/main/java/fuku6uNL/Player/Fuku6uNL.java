@@ -158,7 +158,9 @@ public class Fuku6uNL implements Player {
                     }
                     utteranceString.append(seer).append("は").append(target).append("に").append(Utterance.convertSpeciesToWhiteBlack(divinedMapEntry.getValue()));
                     // 占い師2人の時に，対抗に黒出しするエージェントは怪しいよね　と言う．
-                    if (boardSurface.getPlayerCoRole(NLP.convertStrToAgent(boardSurface.getGameInfo().getAgentList(), target)).equals(Role.SEER)
+                    Role targetCo = boardSurface.getPlayerCoRole(divinedMapEntry.getKey());
+                    if (targetCo != null
+                            && targetCo.equals(Role.SEER)
                             && divinedMapEntry.getValue().equals(Species.WEREWOLF)) {
                         if (boardSurface.getNumSeerCo() == 2) {
                             Utterance.getInstance().offer("対抗占い師に黒出し？2人占い師COなら対抗は狂人がセオリーだし、" + seer + "の判定は怪しいよ。");
@@ -211,7 +213,11 @@ public class Fuku6uNL implements Player {
         if (utterance != null) {
             return utterance;
         } else {
-            return "Over";
+            if (turn > 7) {
+                return "Over";
+            } else {
+                return "Skip";
+            }
         }
     }
 
