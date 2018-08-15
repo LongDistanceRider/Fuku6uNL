@@ -5,13 +5,15 @@ import fuku6uNL.utterance.Utterance;
 import org.aiwolf.common.data.Agent;
 import org.aiwolf.common.data.Role;
 import org.aiwolf.common.data.Species;
+import org.aiwolf.common.net.GameInfo;
 
 import java.util.List;
 
 public class Villager extends AbstractRole {
     @Override
-    public void dayStart(BoardSurface boardSurface) {
-        int day = boardSurface.getGameInfo().getDay();
+    public void dayStart() {
+        GameInfo gameInfo = BoardSurface.getInstance().getGameInfo();
+        int day = gameInfo.getDay();
         switch (day) {
             case 1:
                 Utterance.getInstance().offer("人狼怖いよー");
@@ -23,7 +25,9 @@ public class Villager extends AbstractRole {
     }
 
     @Override
-    public Agent vote(BoardSurface boardSurface) {
+    public Agent vote() {
+        BoardSurface boardSurface = BoardSurface.getInstance();
+
         Agent forceVoteTarget = boardSurface.getForceVoteTarget();
         if (forceVoteTarget != null) {
             return forceVoteTarget;
@@ -32,14 +36,16 @@ public class Villager extends AbstractRole {
     }
 
     @Override
-    public void talk(int turn, BoardSurface boardSurface) {
+    public void talk(int turn) {
+        BoardSurface boardSurface = BoardSurface.getInstance();
+
         switch (turn) {
             case 4:
                 List<Agent> seerCoAgentList = boardSurface.getCoAgentList(Role.SEER);
                 // 占い師が2人の時
                 if (seerCoAgentList.size() == 2) {
                     // 自分に黒出ししたエージェントがいるかチェックする
-                    List<Agent> liarAgent = boardSurface.divinedMeBlackAgentList(boardSurface.getGameInfo().getAgent(), Species.WEREWOLF);
+                    List<Agent> liarAgent = boardSurface.divinedTargetResult(boardSurface.getGameInfo().getAgent(), Species.WEREWOLF);
                     if (!liarAgent.isEmpty()) {
                         seerCoAgentList.removeAll(liarAgent);
                         if (seerCoAgentList.size() == 1) {

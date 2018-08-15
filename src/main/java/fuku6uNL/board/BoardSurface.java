@@ -1,5 +1,6 @@
 package fuku6uNL.board;
 
+import fuku6uNL.utterance.Utterance;
 import org.aiwolf.common.data.Agent;
 import org.aiwolf.common.data.Role;
 import org.aiwolf.common.data.Species;
@@ -68,10 +69,10 @@ public class BoardSurface {
     }
 
     /**
-     * Constructor
+     * Initialize
      * @param gameInfo ゲーム情報
      */
-    public BoardSurface(GameInfo gameInfo) {
+    public void initialize(GameInfo gameInfo) {
         this.gameInfo = gameInfo;
         gameInfo.getAgentList().stream()
                 .filter(agent -> agent != gameInfo.getAgent())
@@ -165,6 +166,20 @@ public class BoardSurface {
     /*  状況 */
     /* === === === === === === === === === === === === === === === === === === === === === */
 
+    /**
+     * 占い結果（本当の）からtargetのSpeciesを取得する
+     * @param target 知りたいエージェント
+     * @return 結果があればSpeciesを返す．結果がない場合はnullを返却
+     */
+    public Species getTrueDivinedMapResult (Agent target) {
+        for (Map.Entry<Agent, Species> divinedEntry :
+                trueDivinedMap.entrySet()) {
+            if (divinedEntry.getKey().equals(target)) {
+                return divinedEntry.getValue();
+            }
+        }
+        return null;
+    }
     /* === === === === === === === === === === === === === === === === === === === === === */
     /*  追放者・被害者情報 */
     /* === === === === === === === === === === === === === === === === === === === === === */
@@ -183,7 +198,7 @@ public class BoardSurface {
      * @param checkResult 条件となるSpecies
      * @return 条件にあったエージェントリスト
      */
-    public List<Agent> divinedMeBlackAgentList (Agent checkTarget, Species checkResult) {
+    public List<Agent> divinedTargetResult(Agent checkTarget, Species checkResult) {
         List<Agent> correctAgentList = new ArrayList<>();
         playerInfoMap.forEach(((agent, playerInfo) ->  {
             Map<Agent, Species> divined = playerInfo.getDivinedMap();
@@ -330,4 +345,13 @@ public class BoardSurface {
         }
         return null;
     }
+    /* *** initialize-on-demand holder *** */
+    public static BoardSurface getInstance() {
+        return BoardSurface.BoardSurfaceHolder.INSTANCE;
+    }
+    private BoardSurface(){}
+    private static class BoardSurfaceHolder {
+        static final BoardSurface INSTANCE = new BoardSurface();
+    }
+    /* *** *** */
 }

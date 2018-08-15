@@ -5,6 +5,7 @@ import fuku6uNL.listen.Listen;
 import fuku6uNL.listen.NLP;
 import fuku6uNL.log.Log;
 import fuku6uNL.log.LogWriter;
+import fuku6uNL.observer.TurnObserver;
 import fuku6uNL.role.*;
 import fuku6uNL.util.Util;
 import fuku6uNL.utterance.Utterance;
@@ -17,8 +18,6 @@ import java.util.Map;
 
 public class Fuku6uNL implements Player {
 
-    // BoardSurface
-    private BoardSurface boardSurface;
     // Listen
     private Listen listen = new Listen();
     // 役職ごとの処理
@@ -28,20 +27,20 @@ public class Fuku6uNL implements Player {
     public void initialize(GameInfo gameInfo, GameSetting gameSetting) {
         Log.startLog();
         Log.trace("initialize()");
-        this.boardSurface = new BoardSurface(gameInfo);
+        BoardSurface.getInstance().initialize(gameInfo);
     }
 
     @Override
     public void update(GameInfo gameInfo) {
         Log.trace("update()");
-        this.boardSurface.update(gameInfo);
-        listen.update(boardSurface);
+        BoardSurface.getInstance().update(gameInfo);
+        listen.update();
     }
 
     @Override
     public void dayStart() {
-        boardSurface.setForceVoteTarget(null);
-        GameInfo gameInfo = boardSurface.getGameInfo();
+        BoardSurface.getInstance().setForceVoteTarget(null);
+        GameInfo gameInfo = BoardSurface.getInstance().getGameInfo();
         Log.trace("dayStart()");
         Log.info("=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=");
         Log.info("\t" + gameInfo.getDay() + "day start : My number is " + gameInfo.getAgent().toString());
@@ -70,7 +69,7 @@ public class Fuku6uNL implements Player {
                         break;
                 }
                 // 役職ごとの処理
-                assignRole.dayStart(boardSurface);
+                assignRole.dayStart();
                 break;
             default:
                 // 発言リセット
@@ -94,15 +93,17 @@ public class Fuku6uNL implements Player {
                     Log.info("被害者 : なし（GJ発生）");
                 }
                 // 役職ごとの処理
-                assignRole.dayStart(boardSurface);
+                assignRole.dayStart();
         }
 
     }
 
     @Override
     public String talk() {
+        BoardSurface boardSurface = BoardSurface.getInstance();
+        GameInfo gameInfo = boardSurface.getGameInfo();
         // 0日目処理
-        if (boardSurface.getGameInfo().getDay() == 0) {
+        if (gameInfo.getDay() == 0) {
             String string = Utterance.getInstance().poll();
             if (string != null) {
                 return string;
@@ -113,12 +114,14 @@ public class Fuku6uNL implements Player {
         Log.trace("talk()");
         // ターン数取得
         int turn = 0;
-        List<Talk> talkList = boardSurface.getGameInfo().getTalkList();
+        List<Talk> talkList = gameInfo.getTalkList();
         if (!talkList.isEmpty()) {
             turn = talkList.get(talkList.size()-1).getTurn();
         }
         // ターン数3の時に状況確認と雑談発言
-        if (turn == 3 && boardSurface.getGameInfo().getDay() == 1) {
+        if (turn == 3 && gameInfo.getDay() == 1) {
+            // 占い師の人数をチェックする
+            TurnObserver.checkSeerCo();
             // 占い師COがn人の場合
             int seerNum = boardSurface.getNumSeerCo();
             Utterance.getInstance().offer("今回は" + seerNum +"-0進行だね。");
@@ -150,7 +153,7 @@ public class Fuku6uNL implements Player {
                         utteranceString.append("を、");
                     }
                     String target = divinedMapEntry.getKey().toString();
-                    if (target.equals(boardSurface.getGameInfo().getAgent().toString())) {
+                    if (target.equals(gameInfo.getAgent().toString())) {
                         target = "ボク";
                     }
                     utteranceString.append(seer).append("は").append(target).append("に").append(Utterance.convertSpeciesToWhiteBlack(divinedMapEntry.getValue()));
@@ -195,7 +198,7 @@ public class Fuku6uNL implements Player {
                 Utterance.getInstance().offer("最多投票先は、" + maxVoteTarget + "だね。");
             }
             // 役職固有の処理
-            assignRole.talk(turn, boardSurface);
+            assignRole.talk(turn);
 
             // 黒出されたAgentに投票発言をする？占い師で白出ししてる時，狂人で白出ししている時，人狼で白出ししてる時
 
@@ -215,16 +218,17 @@ public class Fuku6uNL implements Player {
     @Override
     public Agent vote() {
         Log.trace("vote()");
-        return assignRole.vote(boardSurface);
+        return assignRole.vote();
     }
 
     @Override
     public Agent attack() {
         Log.trace("attack()");
+        GameInfo gameInfo = BoardSurface.getInstance().getGameInfo();
         // 追放者以外のエージェントにアタック
-        Agent executedAgent = boardSurface.getGameInfo().getLatestExecutedAgent();
-        List<Agent> candidateAgentList = boardSurface.getGameInfo().getAliveAgentList();
-        candidateAgentList.remove(boardSurface.getGameInfo().getAgent());
+        Agent executedAgent = gameInfo.getLatestExecutedAgent();
+        List<Agent> candidateAgentList = gameInfo.getAliveAgentList();
+        candidateAgentList.remove(gameInfo.getAgent());
         candidateAgentList.remove(executedAgent);
 
         Agent attakedAgent = Util.randomElementSelect(candidateAgentList);
@@ -236,9 +240,11 @@ public class Fuku6uNL implements Player {
     @Override
     public Agent divine() {
         Log.trace("divine");
-        List<Agent> candidateAgentList = boardSurface.getGameInfo().getAliveAgentList();
-        candidateAgentList.remove(boardSurface.getGameInfo().getAgent());
-        candidateAgentList.remove(boardSurface.getGameInfo().getLatestExecutedAgent());
+        BoardSurface boardSurface = BoardSurface.getInstance();
+        GameInfo gameInfo = boardSurface.getGameInfo();
+        List<Agent> candidateAgentList = gameInfo.getAliveAgentList();
+        candidateAgentList.remove(gameInfo.getAgent());
+        candidateAgentList.remove(gameInfo.getLatestExecutedAgent());
         candidateAgentList.removeAll(boardSurface.getDivinedMap().keySet());
         candidateAgentList.removeAll(boardSurface.getTrueDivinedMap().keySet());
 
@@ -253,7 +259,7 @@ public class Fuku6uNL implements Player {
         Log.trace("finish()");
         // 勝敗を出力
         boolean isWerewolfSideWin = false;
-        GameInfo gameInfo = boardSurface.getGameInfo();
+        GameInfo gameInfo = BoardSurface.getInstance().getGameInfo();
         for (Agent agent :
                 gameInfo.getAliveAgentList()) {
             if (gameInfo.getRoleMap().get(agent).equals(Role.WEREWOLF)) {

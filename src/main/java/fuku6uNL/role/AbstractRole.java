@@ -13,9 +13,9 @@ import java.util.Map;
 
 public abstract class AbstractRole {
 
-    public abstract void dayStart(BoardSurface boardSurface);
-    public abstract Agent vote(BoardSurface boardSurface);
-    public abstract void talk(int turn, BoardSurface boardSurface);
+    public abstract void dayStart();
+    public abstract Agent vote();
+    public abstract void talk(int turn);
 
     /**
      * 偽占い結果を作成し発言する

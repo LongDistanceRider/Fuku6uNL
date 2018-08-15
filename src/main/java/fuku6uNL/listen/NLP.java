@@ -168,7 +168,7 @@ public class NLP {
                             // <TARGET>照合
                             target = getTargetString(nlText, Integer.parseInt(value[i + 1]));
                             targetAgent = convertStrToAgent(agentList, target);
-                            if (target != null) {
+                            if (targetAgent != null) {
                                 nlpTextList.add(new ContentNL("REQUEST_VOTE", targetAgent));
                                 protocolTextList.add("VOTE " + target);
 //                            // 自分に投票発言をしているか
@@ -192,7 +192,7 @@ public class NLP {
                             // <TARGET>照合
                             target = getTargetString(nlText, Integer.parseInt(value[i + 1]));
                             targetAgent = convertStrToAgent(agentList, target);
-                            if (target != null) {
+                            if (targetAgent != null) {
                                 nlpTextList.add(new ContentNL("LIAR", targetAgent));
 //                            // 自分に嘘つき発言をしているか
 //                            if (boardSurface.getMe().toString().equals(target)) {
@@ -208,7 +208,7 @@ public class NLP {
                             // <TARGET>照合
                             target = getTargetString(nlText, Integer.parseInt(value[i + 1]));
                             targetAgent = convertStrToAgent(agentList, target);
-                            if (target != null) {
+                            if (targetAgent != null) {
                                 nlpTextList.add(new ContentNL("SUSPICIOUS", targetAgent));
 //                            // 自分に疑い発言をしているか
 //                            if (boardSurface.getMe().toString().equals(target)) {
@@ -224,7 +224,7 @@ public class NLP {
                             // <TARGET>照合
                             target = getTargetString(nlText, Integer.parseInt(value[i + 1]));
                             targetAgent = convertStrToAgent(agentList, target);
-                            if (target != null) {
+                            if (targetAgent != null) {
                                 nlpTextList.add(new ContentNL("TRUST", targetAgent));
 //                            // 自分に疑い発言をしているか
 //                            if (boardSurface.getMe().toString().equals(target)) {
@@ -239,8 +239,9 @@ public class NLP {
                             Log.debug("NlTopic: " + value[i]);
                             // <TARGET>照合
                             target = getTargetString(nlText, Integer.parseInt(value[i + 1]));
-                            if (target != null) {
-                                protocolTextList.add("WHO_VOTE " + target);
+                            targetAgent = convertStrToAgent(agentList, target);
+                            if (targetAgent != null) {
+                                nlpTextList.add(new ContentNL("WHO_VOTE", targetAgent));
                             } else {
                                 Log.error("VOTE変換中に予期しないエラー（null）が発生しました．");
                                 break;
@@ -250,14 +251,15 @@ public class NLP {
                             Log.debug("NlTopic: " + value[i]);
                             // <TARGET>照合
                             target = getTargetString(nlText, Integer.parseInt(value[i + 1]));
-                            if (target == null) {
+                            targetAgent = convertStrToAgent(agentList, target);
+                            if (targetAgent == null) {
                                 Log.error("DIVINED変換中に予期しないエラー（null）が発生しました．");
                                 break;
                             }
                             // <ROLE>照合
                             role = getRole(nlText, Integer.parseInt((value[i + 2])));
                             if (role != null) {
-                                protocolTextList.add("WHO_ROLE " + target + " " + role);
+                                nlpTextList.add(new ContentNL("WHO_ROLE", targetAgent, role));
                             } else {
                                 Log.error("DIVINED変換中に予期しないエラー（null）が発生しました．");
                                 break;

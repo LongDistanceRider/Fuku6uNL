@@ -1,7 +1,7 @@
 package fuku6uNL.role;
 
 import fuku6uNL.board.BoardSurface;
-import fuku6uNL.observer.Observer;
+import fuku6uNL.observer.DayStartObserver;
 import fuku6uNL.util.Util;
 import fuku6uNL.utterance.Utterance;
 import org.aiwolf.common.data.Agent;
@@ -14,7 +14,8 @@ public class Werewolf extends AbstractRole {
     private boolean isSeerCo = false;
 
     @Override
-    public void dayStart(BoardSurface boardSurface) {
+    public void dayStart() {
+        BoardSurface boardSurface = BoardSurface.getInstance();
         GameInfo gameInfo = boardSurface.getGameInfo();
 
         // 占い師COするか決める（確率0.5）
@@ -25,7 +26,7 @@ public class Werewolf extends AbstractRole {
         if (isSeerCo) {
             // 占い師CO
             boardSurface.setCoRole(Role.SEER);
-            Observer.opposeCo(boardSurface, Role.SEER);
+            DayStartObserver.opposeCo(Role.SEER);
             Utterance.getInstance().offer("ボクが占い師！他はみんな偽物だよ！");
             // 占い結果作成
             lieDivined(boardSurface, gameInfo.getAliveAgentList());
@@ -34,7 +35,9 @@ public class Werewolf extends AbstractRole {
     }
 
     @Override
-    public Agent vote(BoardSurface boardSurface) {
+    public Agent vote() {
+        BoardSurface boardSurface = BoardSurface.getInstance();
+        GameInfo gameInfo = boardSurface.getGameInfo();
         Agent forceVoteTarget = boardSurface.getForceVoteTarget();
         if (forceVoteTarget != null) {
             return forceVoteTarget;
@@ -43,7 +46,7 @@ public class Werewolf extends AbstractRole {
     }
 
     @Override
-    public void talk(int turn, BoardSurface boardSurface) {
+    public void talk(int turn) {
 
     }
 }

@@ -1,7 +1,7 @@
 package fuku6uNL.role;
 
 import fuku6uNL.board.BoardSurface;
-import fuku6uNL.observer.Observer;
+import fuku6uNL.observer.DayStartObserver;
 import fuku6uNL.util.Util;
 import fuku6uNL.utterance.Utterance;
 import org.aiwolf.common.data.Agent;
@@ -10,16 +10,18 @@ import org.aiwolf.common.data.Role;
 import org.aiwolf.common.data.Species;
 import org.aiwolf.common.net.GameInfo;
 import java.util.List;
-import java.util.Map;
 
 public class Seer extends AbstractRole {
 
     @Override
-    public void dayStart(BoardSurface boardSurface) {
+    public void dayStart() {
+        BoardSurface boardSurface = BoardSurface.getInstance();
         GameInfo gameInfo = boardSurface.getGameInfo();
+
         // 占い師CO
         boardSurface.setCoRole(Role.SEER);
-        Observer.opposeCo(boardSurface, Role.SEER);
+        DayStartObserver.opposeCo(Role.SEER);
+        DayStartObserver.opposeCo(Role.SEER);
         Utterance.getInstance().offer("ボクは占い師！");
         // 占い結果取得
         Judge divination = gameInfo.getDivineResult();
@@ -49,7 +51,9 @@ public class Seer extends AbstractRole {
     }
 
     @Override
-    public Agent vote(BoardSurface boardSurface) {
+    public Agent vote() {
+        BoardSurface boardSurface = BoardSurface.getInstance();
+
         Agent forceVoteTarget = boardSurface.getForceVoteTarget();
         if (forceVoteTarget != null) {
             return forceVoteTarget;
@@ -58,7 +62,7 @@ public class Seer extends AbstractRole {
     }
 
     @Override
-    public void talk(int turn, BoardSurface boardSurface) {
+    public void talk(int turn) {
         if (turn == 5) {
 //            // 黒を出しているエージェントに対して発言
 //            Map.Entry<Agent, Species> latestDivinedMap = boardSurface.getLatestDivinedMap();
